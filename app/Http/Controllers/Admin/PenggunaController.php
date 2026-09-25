@@ -12,12 +12,12 @@ class PenggunaController extends Controller
 {
     // Role yang tersedia (kunci = nilai yang disimpan, isi = tulisan di dropdown)
     private const ROLE = [
-        'admin'      => 'Admin',
-        'kasir'      => 'Kasir',
-        'chef'       => 'Chef',
+        'admin' => 'Admin',
+        'kasir' => 'Kasir',
+        'chef' => 'Chef',
         'supervisor' => 'Supervisor',
-        'owner'      => 'Owner',
-        'pelanggan'  => 'Pelanggan',
+        'owner' => 'Owner',
+        'pelanggan' => 'Pelanggan',
     ];
 
     // Halaman daftar pengguna
@@ -56,6 +56,13 @@ class PenggunaController extends Controller
     // Halaman form edit pengguna
     public function edit(User $pengguna)
     {
+        // Akun Zii tidak boleh diedit.
+        if ($pengguna->name === 'Zii') {
+            return redirect()
+                ->route('admin.pengguna.index')
+                ->with('error', 'Akun Zii tidak dapat diedit.');
+        }
+
         $roles = self::ROLE;
 
         return view('admin.pengguna.edit', compact('pengguna', 'roles'));
@@ -64,11 +71,18 @@ class PenggunaController extends Controller
     // Simpan perubahan pengguna
     public function update(Request $request, User $pengguna)
     {
+        // Akun Zii tidak boleh diedit.
+        if ($pengguna->name === 'Zii') {
+            return redirect()
+                ->route('admin.pengguna.index')
+                ->with('error', 'Akun Zii tidak dapat diedit.');
+        }
+
         // Pengaman: admin tidak boleh mengubah role atau menonaktifkan akunnya sendiri.
         // Nilainya dipaksa tetap di sisi server, walau form dimanipulasi.
         if ($pengguna->is($request->user())) {
             $request->merge([
-                'role'  => $pengguna->role,
+                'role' => $pengguna->role,
                 'aktif' => true,
             ]);
         }
@@ -92,6 +106,13 @@ class PenggunaController extends Controller
     // Hapus pengguna
     public function destroy(Request $request, User $pengguna)
     {
+        // Akun Zii tidak boleh dihapus.
+        if ($pengguna->name === 'Zii') {
+            return redirect()
+                ->route('admin.pengguna.index')
+                ->with('error', 'Akun Zii tidak dapat dihapus.');
+        }
+
         // Pengaman: admin tidak boleh menghapus akunnya sendiri
         if ($pengguna->is($request->user())) {
             return redirect()
@@ -114,13 +135,13 @@ class PenggunaController extends Controller
     private function aturan(?User $pengguna = null): array
     {
         return [
-            'name'        => ['required', 'string', 'max:100'],
-            'email'       => ['required', 'email', 'max:255', Rule::unique('users', 'email')->ignore($pengguna)],
+            'name' => ['required', 'string', 'max:100'],
+            'email' => ['required', 'email', 'max:255', Rule::unique('users', 'email')->ignore($pengguna)],
             'no_whatsapp' => ['nullable', 'string', 'max:20', 'regex:/^[0-9+\-\s()]+$/'],
-            'role'        => ['required', Rule::in(array_keys(self::ROLE))],
+            'role' => ['required', Rule::in(array_keys(self::ROLE))],
 
             // Saat menambah: wajib. Saat mengedit: boleh kosong (berarti tidak diubah).
-            'password'    => $pengguna
+            'password' => $pengguna
                 ? ['nullable', 'string', 'min:8', 'confirmed']
                 : ['required', 'string', 'min:8', 'confirmed'],
         ];
@@ -129,17 +150,17 @@ class PenggunaController extends Controller
     private function pesan(): array
     {
         return [
-            'name.required'      => 'Nama wajib diisi.',
-            'name.max'           => 'Nama maksimal 100 karakter.',
-            'email.required'     => 'Email wajib diisi.',
-            'email.email'        => 'Format email tidak valid.',
-            'email.unique'       => 'Email ini sudah dipakai akun lain.',
-            'no_whatsapp.regex'  => 'Nomor hanya boleh berisi angka, spasi, dan tanda + - ( ).',
-            'no_whatsapp.max'    => 'Nomor maksimal 20 karakter.',
-            'role.required'      => 'Role wajib dipilih.',
-            'role.in'            => 'Role yang dipilih tidak valid.',
-            'password.required'  => 'Password wajib diisi.',
-            'password.min'       => 'Password minimal 8 karakter.',
+            'name.required' => 'Nama wajib diisi.',
+            'name.max' => 'Nama maksimal 100 karakter.',
+            'email.required' => 'Email wajib diisi.',
+            'email.email' => 'Format email tidak valid.',
+            'email.unique' => 'Email ini sudah dipakai akun lain.',
+            'no_whatsapp.regex' => 'Nomor hanya boleh berisi angka, spasi, dan tanda + - ( ).',
+            'no_whatsapp.max' => 'Nomor maksimal 20 karakter.',
+            'role.required' => 'Role wajib dipilih.',
+            'role.in' => 'Role yang dipilih tidak valid.',
+            'password.required' => 'Password wajib diisi.',
+            'password.min' => 'Password minimal 8 karakter.',
             'password.confirmed' => 'Konfirmasi password tidak sama.',
         ];
     }

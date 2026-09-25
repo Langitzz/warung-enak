@@ -11,6 +11,30 @@ use Illuminate\Validation\ValidationException;
 
 class Pesanan extends Model
 {
+    // Otomatis nyatet ke Aktivitas setiap kali pesanan dibuat atau statusnya berubah —
+    // nyakup SEMUA jalur (kasir, chef, admin, pelanggan batalin sendiri), soalnya semua
+    // jalur itu ujung-ujungnya lewat model ini juga. Nggak perlu nambah kode di controller manapun.
+    protected static function booted(): void
+    {
+        static::created(function (self $pesanan) {
+            if ($pesanan->status === 'selesai') {
+                $sumber = 'transaksi Kasir';
+            } elseif ($pesanan->user_id) {
+                $sumber = 'pelanggan terdaftar (' . $pesanan->nama_pelanggan . ')';
+            } else {
+                $sumber = 'tamu (' . $pesanan->nama_pelanggan . ')';
+            }
+
+            Aktivitas::catat("Pesanan {$pesanan->kode} dibuat — {$sumber}");
+        });
+
+        static::updated(function (self $pesanan) {
+            if ($pesanan->wasChanged('status')) {
+                $dari = self::STATUS[$pesanan->getOriginal('status')] ?? $pesanan->getOriginal('status');
+                Aktivitas::catat("Pesanan {$pesanan->kode} diubah dari {$dari} ke {$pesanan->label_status}");
+            }
+        });
+    }
     // Status yang dipakai (kunci = nilai di database, isi = tulisan di tampilan)
     public const STATUS = [
         'menunggu'   => 'Menunggu',
@@ -51,24 +75,6 @@ class Pesanan extends Model
             'biaya_layanan' => 'integer',
             'total'         => 'integer',
         ];
-    }
-
-    // ---------------------------------------------------------------
-    // Activity log: dicatat otomatis di sini, bukan di tiap controller,
-    // supaya semua sumber pesanan (admin, kasir, pelanggan) otomatis
-    // tercatat tanpa perlu mengubah kode yang sudah ada.
-    // ---------------------------------------------------------------
-    protected static function booted(): void
-    {
-        static::created(function (Pesanan $pesanan) {
-            Aktivitas::catat("Pesanan {$pesanan->kode} dibuat atas nama {$pesanan->nama_pelanggan}.");
-        });
-
-        static::updated(function (Pesanan $pesanan) {
-            if ($pesanan->wasChanged('status')) {
-                Aktivitas::catat("Status pesanan {$pesanan->kode} diubah menjadi {$pesanan->label_status}.");
-            }
-        });
     }
 
     // ---------------------------------------------------------------

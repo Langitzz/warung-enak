@@ -14,6 +14,7 @@ use App\Http\Controllers\Chef\MenuController as ChefMenuController;
 use App\Http\Controllers\Chef\PesananController as ChefPesananController;
 use App\Http\Controllers\KasirController;
 use App\Http\Controllers\Owner\DashboardController as OwnerDashboardController;
+use App\Http\Controllers\Supervisor\AktivitasController;
 use App\Http\Controllers\Owner\LaporanBisnisController;
 use App\Http\Controllers\Owner\PerformaMenuController;
 use App\Http\Controllers\PemesananController;
@@ -97,7 +98,7 @@ Route::prefix('supervisor')
             ->name('laporan');
 
         // Belum ada sistem activity log, sesuai instruksi brief dipakai halaman pengganti dulu
-        Route::view('/aktivitas', 'admin.segera', ['judul' => 'Aktivitas Operasional'])
+        Route::get('/aktivitas', [AktivitasController::class, 'index'])
             ->name('aktivitas');
     });
 

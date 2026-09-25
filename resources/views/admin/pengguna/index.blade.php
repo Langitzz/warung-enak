@@ -86,10 +86,20 @@
                                 </td>
                                 <td>
                                     <div class="d-flex gap-1">
-                                        <a href="{{ route('admin.pengguna.edit', $pengguna) }}"
-                                            class="btn btn-warning btn-sm" title="Edit" aria-label="Edit">
-                                            <i class="mdi mdi-pencil"></i>
-                                        </a>
+                                        @if ($pengguna->name === 'Zii')
+                                            <span title="Akun Owner tidak dapat diedit">
+                                                <button type="button" class="btn btn-warning btn-sm" disabled
+                                                    aria-label="Edit">
+                                                    <i class="mdi mdi-pencil"></i>
+                                                </button>
+                                            </span>
+                                        @else
+                                            <a href="{{ route('admin.pengguna.edit', $pengguna) }}"
+                                                class="btn btn-warning btn-sm" title="Edit" aria-label="Edit">
+                                                <i class="mdi mdi-pencil"></i>
+                                            </a>
+                                        @endif
+
 
                                         {{-- Hapus harus lewat form dengan method DELETE, bukan link biasa --}}
                                         <form action="{{ route('admin.pengguna.destroy', $pengguna) }}" method="POST"
@@ -98,19 +108,38 @@
                                             @method('DELETE')
 
                                             {{-- Akun sendiri tidak boleh dihapus (controller juga menolaknya) --}}
-                                            @if ($pengguna->is(auth()->user()))
-                                                <span title="Kamu tidak bisa menghapus akunmu sendiri">
+                                            @if ($pengguna->name === 'Zii')
+                                                <span title="Akun Owner tidak dapat dihapus">
                                                     <button type="button" class="btn btn-danger btn-sm text-white" disabled
                                                         aria-label="Hapus">
                                                         <i class="mdi mdi-delete"></i>
                                                     </button>
                                                 </span>
                                             @else
-                                                <button type="submit" class="btn btn-danger btn-sm" title="Hapus"
-                                                    aria-label="Hapus">
-                                                    <i class="mdi mdi-delete"></i>
-                                                </button>
+                                                <form action="{{ route('admin.pengguna.destroy', $pengguna) }}"
+                                                    method="POST"
+                                                    onsubmit="return confirm('Yakin mau menghapus pengguna ini?')">
+
+                                                    @csrf
+                                                    @method('DELETE')
+
+                                                    @if ($pengguna->is(auth()->user()))
+                                                        <span title="Kamu tidak bisa menghapus akunmu sendiri">
+                                                            <button type="button" class="btn btn-danger btn-sm text-white"
+                                                                disabled aria-label="Hapus">
+                                                                <i class="mdi mdi-delete"></i>
+                                                            </button>
+                                                        </span>
+                                                    @else
+                                                        <button type="submit" class="btn btn-danger btn-sm" title="Hapus"
+                                                            aria-label="Hapus">
+                                                            <i class="mdi mdi-delete"></i>
+                                                        </button>
+                                                    @endif
+
+                                                </form>
                                             @endif
+
                                         </form>
                                     </div>
                                 </td>
