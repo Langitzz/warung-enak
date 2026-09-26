@@ -3,6 +3,25 @@
 
 @push('styles')
     <style>
+        /* Cetak struk: sembunyikan semua elemen lain, tampilkan hanya area struk */
+        @media print {
+            body * {
+                visibility: hidden;
+            }
+
+            #areaStruk,
+            #areaStruk * {
+                visibility: visible;
+            }
+
+            #areaStruk {
+                position: absolute;
+                top: 0;
+                left: 0;
+                width: 100%;
+            }
+        }
+
         .keypad-wrap {
             max-width: 260px;
             margin: 0 auto;
@@ -263,6 +282,14 @@
                     <label class="form-label mb-1 small">Uang Dibayar</label>
                     <input type="text" class="form-control text-end mb-2" id="labelBayar" value="Rp0" readonly>
 
+                    <div class="d-flex flex-wrap gap-1 mb-2" id="nominalCepat">
+                        <button type="button" class="btn btn-sm btn-outline-primary flex-fill" id="btnUangPas">Uang Pas</button>
+                        @foreach ([20000, 50000, 100000] as $nominal)
+                            <button type="button" class="btn btn-sm btn-outline-secondary flex-fill tombol-nominal"
+                                data-nominal="{{ $nominal }}">{{ number_format($nominal / 1000, 0, ',', '.') }}rb</button>
+                        @endforeach
+                    </div>
+
                     <div class="row g-1 keypad-wrap">
                         @foreach (['1', '2', '3', '4', '5', '6', '7', '8', '9'] as $angka)
                             <div class="col-4">
@@ -299,6 +326,45 @@
 
         </div>
     </div>
+
+    {{-- Modal struk setelah pembayaran berhasil --}}
+    <div class="modal fade" id="modalStruk" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog modal-sm modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Pembayaran Berhasil</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Tutup"></button>
+                </div>
+                <div class="modal-body" id="areaStruk">
+                    <div class="text-center mb-2">
+                        <strong>{{ \App\Models\Pengaturan::namaWarung() }}</strong><br>
+                        <small class="text-muted">Struk Pembayaran</small>
+                    </div>
+                    <div class="d-flex justify-content-between small text-muted mb-2">
+                        <span id="strukKode"></span>
+                        <span id="strukWaktu"></span>
+                    </div>
+                    <hr>
+                    <table class="table table-sm mb-2">
+                        <tbody id="strukItems"></tbody>
+                    </table>
+                    <hr>
+                    <div class="d-flex justify-content-between"><span>Subtotal</span><span id="strukSubtotal"></span></div>
+                    <div class="d-flex justify-content-between"><span>Pajak</span><span id="strukPajak"></span></div>
+                    <div class="d-flex justify-content-between"><span>Biaya Layanan</span><span id="strukBiayaLayanan"></span></div>
+                    <div class="d-flex justify-content-between fw-bold border-top pt-1 mt-1"><span>Total</span><span id="strukTotal"></span></div>
+                    <div class="d-flex justify-content-between mt-2"><span>Bayar</span><span id="strukBayar"></span></div>
+                    <div class="d-flex justify-content-between"><span>Kembalian</span><span id="strukKembalian"></span></div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-outline-secondary" id="btnCetakStruk">
+                        <i class="mdi mdi-printer"></i> Cetak
+                    </button>
+                    <button type="button" class="btn btn-primary" data-bs-dismiss="modal">Pesanan Baru</button>
+                </div>
+            </div>
+        </div>
+    </div>
 @endsection
 
 @push('scripts')
@@ -307,6 +373,32 @@
             const pesanan = {};
             let uangBayar = 0;
             const csrfToken = document.querySelector('meta[name="csrf-token"]').content;
+            const modalStruk = new bootstrap.Modal(document.getElementById('modalStruk'));
+
+            function tampilkanStruk(data, uangDibayar) {
+                document.getElementById('strukKode').textContent = data.kode;
+                document.getElementById('strukWaktu').textContent = data.waktu;
+
+                document.getElementById('strukItems').innerHTML = data.items.map((item) => `
+                    <tr>
+                        <td>${item.nama}<br><small class="text-muted">${item.jumlah} x ${formatRupiah(item.harga)}</small></td>
+                        <td class="text-end">${formatRupiah(item.subtotal)}</td>
+                    </tr>
+                `).join('');
+
+                document.getElementById('strukSubtotal').textContent = formatRupiah(data.subtotal);
+                document.getElementById('strukPajak').textContent = formatRupiah(data.pajak);
+                document.getElementById('strukBiayaLayanan').textContent = formatRupiah(data.biaya_layanan);
+                document.getElementById('strukTotal').textContent = formatRupiah(data.total);
+                document.getElementById('strukBayar').textContent = formatRupiah(uangDibayar);
+                document.getElementById('strukKembalian').textContent = formatRupiah(uangDibayar - data.total);
+
+                modalStruk.show();
+            }
+
+            document.getElementById('btnCetakStruk').addEventListener('click', function () {
+                window.print();
+            });
 
             const formatRupiah = (angka) => 'Rp' + Number(angka).toLocaleString('id-ID');
 
@@ -442,6 +534,21 @@
                 hitungKembalian();
             }
 
+            // Tombol nominal cepat: "Uang Pas" (samakan dengan total) dan pecahan umum (ditambahkan, bukan menimpa)
+            document.getElementById('btnUangPas').addEventListener('click', function () {
+                uangBayar = hitungTotal();
+                document.getElementById('labelBayar').value = formatRupiah(uangBayar);
+                hitungKembalian();
+            });
+
+            document.querySelectorAll('.tombol-nominal').forEach(function (btn) {
+                btn.addEventListener('click', function () {
+                    uangBayar += Number(btn.dataset.nominal);
+                    document.getElementById('labelBayar').value = formatRupiah(uangBayar);
+                    hitungKembalian();
+                });
+            });
+
             function kedipkanTombol(btn) {
                 if (!btn) return;
                 btn.classList.add('keypad-pressed');
@@ -503,7 +610,7 @@
                         return data;
                     })
                     .then((data) => {
-                        alert('Pembayaran berhasil! Kode pesanan: ' + data.kode);
+                        tampilkanStruk(data, uangBayar);
                         Object.keys(pesanan).forEach((id) => delete pesanan[id]);
                         uangBayar = 0;
                         document.getElementById('labelBayar').value = formatRupiah(0);

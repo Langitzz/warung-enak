@@ -51,9 +51,21 @@ class KasirController extends Controller
             ], 422);
         }
 
+        $pesanan->load('items');
+
         return response()->json([
             'kode' => $pesanan->kode,
+            'waktu' => $pesanan->created_at->locale('id')->translatedFormat('d M Y, H:i'),
+            'subtotal' => $pesanan->subtotal,
+            'pajak' => $pesanan->pajak,
+            'biaya_layanan' => $pesanan->biaya_layanan,
             'total' => $pesanan->total,
+            'items' => $pesanan->items->map(fn ($item) => [
+                'nama' => $item->nama_menu,
+                'jumlah' => $item->jumlah,
+                'harga' => $item->harga,
+                'subtotal' => $item->subtotal,
+            ]),
         ]);
     }
 }
