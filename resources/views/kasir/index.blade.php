@@ -170,12 +170,30 @@
             <div class="card h-100">
                 <div class="card-body">
                     <h5 class="card-title mb-3">Daftar Menu</h5>
+
+                    @php
+                        $daftarKategori = $menus->pluck('kategori.nama')->filter()->unique()->sort()->values();
+                    @endphp
+
+                    <div class="mb-2">
+                        <input type="text" class="form-control form-control-sm" id="cariMenu" placeholder="Cari menu...">
+                    </div>
+
+                    <div class="d-flex flex-wrap gap-1 mb-3" id="filterKategori">
+                        <button type="button" class="btn btn-sm btn-primary tombol-kategori"
+                            data-kategori="semua">Semua</button>
+                        @foreach ($daftarKategori as $kategori)
+                            <button type="button" class="btn btn-sm btn-outline-secondary tombol-kategori"
+                                data-kategori="{{ $kategori }}">{{ $kategori }}</button>
+                        @endforeach
+                    </div>
+
                     <div class="row g-2 produk-scroll" id="daftarProduk">
                         @forelse ($menus as $menu)
                             <div class="col-6 col-md-4">
                                 <button type="button" class="produk-btn w-100 d-flex align-items-center"
                                     data-id="{{ $menu->id }}" data-nama="{{ $menu->nama }}"
-                                    data-harga="{{ (int) $menu->harga }}">
+                                    data-harga="{{ (int) $menu->harga }}" data-kategori="{{ $menu->kategori->nama ?? '' }}">
                                     @if ($menu->foto)
                                         <img src="{{ asset('storage/' . $menu->foto) }}" alt="{{ $menu->nama }}"
                                             class="produk-foto">
@@ -292,6 +310,38 @@
 
             const formatRupiah = (angka) => 'Rp' + Number(angka).toLocaleString('id-ID');
 
+            // Filter kategori + cari menu, langsung di browser tanpa reload halaman
+            const inputCari = document.getElementById('cariMenu');
+            const tombolKategori = document.querySelectorAll('.tombol-kategori');
+            let kategoriAktif = 'semua';
+
+            function terapkanFilter() {
+                const kataKunci = inputCari.value.trim().toLowerCase();
+                document.querySelectorAll('#daftarProduk > div').forEach(function(kolom) {
+                    const tombol = kolom.querySelector('.produk-btn');
+                    if (!tombol) return;
+                    const cocokKategori = kategoriAktif === 'semua' || tombol.dataset.kategori ===
+                        kategoriAktif;
+                    const cocokKata = tombol.dataset.nama.toLowerCase().includes(kataKunci);
+                    kolom.style.display = (cocokKategori && cocokKata) ? '' : 'none';
+                });
+            }
+
+            inputCari.addEventListener('input', terapkanFilter);
+
+            tombolKategori.forEach(function(tombol) {
+                tombol.addEventListener('click', function() {
+                    kategoriAktif = tombol.dataset.kategori;
+                    tombolKategori.forEach(function(t) {
+                        t.classList.remove('btn-primary');
+                        t.classList.add('btn-outline-secondary');
+                    });
+                    tombol.classList.remove('btn-outline-secondary');
+                    tombol.classList.add('btn-primary');
+                    terapkanFilter();
+                });
+            });
+
             function hitungTotal() {
                 return Object.values(pesanan).reduce((total, item) => total + (item.harga * item.qty), 0);
             }
@@ -305,21 +355,21 @@
                         '<tr id="pesananKosong"><td colspan="4" class="text-center text-muted">Belum ada menu dipesan</td></tr>';
                 } else {
                     tbody.innerHTML = items.map(([id, item]) => `
-          <tr>
-            <td>${item.nama}</td>
-            <td class="text-center">
-              <button type="button" class="btn btn-sm btn-outline-secondary btn-kurang" data-id="${id}">-</button>
-              <span class="mx-2">${item.qty}</span>
-              <button type="button" class="btn btn-sm btn-outline-secondary btn-tambah" data-id="${id}">+</button>
-            </td>
-            <td class="text-end">${formatRupiah(item.harga * item.qty)}</td>
-            <td class="text-end">
-              <button type="button" class="btn btn-sm btn-outline-danger btn-hapus-item" data-id="${id}">
-                <i class="mdi mdi-close"></i>
-              </button>
-            </td>
-          </tr>
-        `).join('');
+                    <tr>
+                        <td>${item.nama}</td>
+                        <td class="text-center">
+                        <button type="button" class="btn btn-sm btn-outline-secondary btn-kurang" data-id="${id}">-</button>
+                        <span class="mx-2">${item.qty}</span>
+                        <button type="button" class="btn btn-sm btn-outline-secondary btn-tambah" data-id="${id}">+</button>
+                        </td>
+                        <td class="text-end">${formatRupiah(item.harga * item.qty)}</td>
+                        <td class="text-end">
+                        <button type="button" class="btn btn-sm btn-outline-danger btn-hapus-item" data-id="${id}">
+                            <i class="mdi mdi-close"></i>
+                        </button>
+                        </td>
+                    </tr>
+                    `).join('');
                 }
 
                 const total = hitungTotal();

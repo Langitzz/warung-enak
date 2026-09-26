@@ -41,4 +41,12 @@ class Pengaturan extends Model
     {
         return static::first() ?? static::create([])->fresh();
     }
+
+    // Nama warung untuk ditampilkan, dengan kata cadangan kalau belum diisi.
+    // Dipakai di semua tempat yang menampilkan nama warung, supaya tidak ada
+    // teks "Warung Enak" yang tertinggal statis di suatu halaman.
+    public static function namaWarung(): string
+    {
+        return static::ambil()->nama_warung ?: 'Warung Enak';
+    }
 }

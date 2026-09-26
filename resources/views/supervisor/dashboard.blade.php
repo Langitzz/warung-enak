@@ -6,7 +6,7 @@
 
     <div class="mb-4">
         <h3 class="fw-bold mb-1">Dashboard Operasional</h3>
-        <p class="text-muted mb-0">Bagaimana kondisi Warung Enak hari ini?</p>
+        <p class="text-muted mb-0">Bagaimana kondisi {{ \App\Models\Pengaturan::namaWarung() }} hari ini?</p>
     </div>
 
     <div class="row">

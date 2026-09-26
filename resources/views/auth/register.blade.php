@@ -39,7 +39,7 @@
                 Bergabung Yuk
             </span>
             <h1 class="display-4 fw-bold">
-                Daftar Akun <span class="text-primary">Warung Enak</span>
+                Daftar Akun <span class="text-primary">{{ \App\Models\Pengaturan::namaWarung() }}</span>
             </h1>
             <p class="lead text-muted mx-auto" style="max-width:700px;">
                 Daftar untuk menyimpan data pesanan dan melihat riwayat pembelian.

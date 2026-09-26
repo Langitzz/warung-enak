@@ -1,5 +1,5 @@
 @php
-    $namaWarung = \App\Models\Pengaturan::ambil()->nama_warung ?: 'Warung Enak';
+    $namaWarung = \App\Models\Pengaturan::namaWarung();
 @endphp
 
 <footer id="footer" class="footer dark-background">

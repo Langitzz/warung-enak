@@ -42,7 +42,7 @@
                 Selamat Datang
             </span>
             <h1 class="display-4 fw-bold">
-                Login <span class="text-primary">Warung Enak</span>
+                Login <span class="text-primary">{{ \App\Models\Pengaturan::namaWarung() }}</span>
             </h1>
             <p class="lead text-muted mx-auto" style="max-width:700px;">
                 Masuk ke akun Anda untuk melanjutkan.

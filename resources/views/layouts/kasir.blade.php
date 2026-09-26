@@ -26,7 +26,7 @@
     <nav class="navbar navbar-expand d-flex align-items-center justify-content-between px-3"
         style="height: 64px; background: #fff; border-bottom: 1px solid #e9ecef;">
         <span class="fw-bold fs-5">
-            {{ \App\Models\Pengaturan::ambil()->nama_warung ?: 'Warung Enak' }} &mdash; Kasir
+            {{ \App\Models\Pengaturan::namaWarung() }} &mdash; Kasir
         </span>
 
         <div class="dropdown">

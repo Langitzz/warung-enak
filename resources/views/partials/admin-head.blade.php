@@ -1,7 +1,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
 <meta name="csrf-token" content="{{ csrf_token() }}">
-<title>@yield('title', 'Admin') - {{ \App\Models\Pengaturan::ambil()->nama_warung ?: 'Warung Enak' }}</title>
+<title>@yield('title', 'Admin') - {{ \App\Models\Pengaturan::namaWarung() }}</title>
 
 <!-- plugins:css -->
 <link rel="stylesheet" href="{{ asset('admin/assets/vendors/feather/feather.css') }}">

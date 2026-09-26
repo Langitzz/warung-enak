@@ -6,7 +6,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
     <meta name="csrf-token" content="{{ csrf_token() }}">
 
-    <title>@yield('title', 'Beranda') - {{ \App\Models\Pengaturan::ambil()->nama_warung ?: 'Warung Enak' }}</title>
+    <title>@yield('title', 'Beranda') - {{ \App\Models\Pengaturan::namaWarung() }}</title>
 
     <!-- Favicons -->
     <link href="{{ asset('user/assets/img/favicon.png') }}" rel="icon">

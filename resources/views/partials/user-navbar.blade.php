@@ -1,5 +1,5 @@
 @php
-    $namaWarung = \App\Models\Pengaturan::ambil()->nama_warung ?: 'Warung Enak';
+    $namaWarung = \App\Models\Pengaturan::namaWarung();
     $jumlahKeranjang = array_sum(session('keranjang', []));
 
     // Foto akun yang sedang login (kalau belum ada, tampil huruf pertama nama) — sama pola kayak admin-navbar

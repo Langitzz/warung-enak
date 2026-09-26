@@ -5,7 +5,7 @@
     $hurufAkun = strtoupper(mb_substr($akun->name, 0, 1));
 
     // Nama warung dari Profil Warung, buat logo navbar
-    $namaWarung = \App\Models\Pengaturan::ambil()->nama_warung ?: 'Warung Enak';
+    $namaWarung = \App\Models\Pengaturan::namaWarung();
     $kataWarung = explode(' ', trim($namaWarung));
     $inisialWarung = strtoupper(mb_substr($kataWarung[0], 0, 1) . mb_substr($kataWarung[1] ?? '', 0, 1));
 @endphp
@@ -34,7 +34,7 @@
         <ul class="navbar-nav">
             <li class="nav-item fw-semibold d-none d-lg-block ms-0">
                 <h1 class="welcome-text">Halo, <span class="text-black fw-bold">{{ auth()->user()->name }}</span></h1>
-                <h3 class="welcome-sub-text">Kelola menu dan pesanan Warung Enak</h3>
+                <h3 class="welcome-sub-text">Kelola menu dan pesanan {{ $namaWarung }}</h3>
             </li>
         </ul>
 

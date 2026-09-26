@@ -13,7 +13,7 @@
             <div class="d-sm-flex align-items-center justify-content-between mb-4">
                 <div>
                     <h4 class="card-title mb-1">Data Menu</h4>
-                    <p class="text-muted mb-0">Kelola daftar menu yang dijual di Warung Enak.</p>
+                    <p class="text-muted mb-0">Kelola daftar menu yang dijual di {{ \App\Models\Pengaturan::namaWarung() }}.</p>
                 </div>
                 <div class="mt-3 mt-sm-0">
                     <a href="{{ route('admin.menu.create') }}" class="btn btn-primary">

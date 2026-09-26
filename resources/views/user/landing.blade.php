@@ -17,7 +17,7 @@
 
     @php
         $pengaturan = \App\Models\Pengaturan::ambil();
-        $namaWarung = $pengaturan->nama_warung ?: 'Warung Enak';
+        $namaWarung = \App\Models\Pengaturan::namaWarung();
 
         // Menu Favorit: 6 menu tersedia terbaru (kategorinya juga harus aktif).
         // Belum ada data "menu terlaris" yang cukup, jadi sementara pakai ini dulu.

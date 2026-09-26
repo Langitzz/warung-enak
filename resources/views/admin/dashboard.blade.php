@@ -19,7 +19,7 @@
     <div class="d-sm-flex align-items-center justify-content-between mb-4">
         <div>
             <h3 class="fw-bold mb-1">Selamat Datang, Admin!</h3>
-            <p class="text-muted mb-0">Pantau aktivitas Warung Enak hari ini.</p>
+            <p class="text-muted mb-0">Pantau aktivitas {{ \App\Models\Pengaturan::namaWarung() }} hari ini.</p>
         </div>
         <div class="mt-3 mt-sm-0 text-muted">
             <i class="mdi mdi-calendar-today me-1"></i>

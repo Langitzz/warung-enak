@@ -26,7 +26,7 @@
     <div class="d-sm-flex align-items-center justify-content-between mb-4">
         <div>
             <h3 class="fw-bold mb-1">Laporan Bisnis</h3>
-            <p class="text-muted mb-0">Ringkasan performa Warung Enak sepanjang waktu.</p>
+            <p class="text-muted mb-0">Ringkasan performa {{ \App\Models\Pengaturan::namaWarung() }} sepanjang waktu.</p>
         </div>
         <button type="button" id="tombolCetak" class="btn btn-outline-primary mt-3 mt-sm-0"
             onclick="window.print()">

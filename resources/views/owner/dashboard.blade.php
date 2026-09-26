@@ -5,7 +5,7 @@
 @section('content')
 
     <div class="mb-4">
-        <h3 class="fw-bold mb-1">Performa Warung Enak</h3>
+        <h3 class="fw-bold mb-1">Performa {{ \App\Models\Pengaturan::namaWarung() }}</h3>
         <p class="text-muted mb-0">Bagaimana performa bisnis sejauh ini?</p>
     </div>
 

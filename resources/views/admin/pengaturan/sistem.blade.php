@@ -8,7 +8,7 @@
 
     <div class="mb-4">
         <h3 class="fw-bold mb-1">Pengaturan Sistem</h3>
-        <p class="text-muted mb-0">Atur cara kerja sistem Warung Enak.</p>
+        <p class="text-muted mb-0">Atur cara kerja sistem {{ \App\Models\Pengaturan::namaWarung() }}.</p>
     </div>
 
     <div class="alert alert-info">
