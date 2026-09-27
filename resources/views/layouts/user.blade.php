@@ -47,6 +47,14 @@
             color: var(--contrast-color);
             background: color-mix(in srgb, var(--accent-color), black 15%);
         }
+
+        /* Foto menu dipotong rapi jadi ukuran seragam, apa pun ukuran asli fotonya */
+        .pricing-item img {
+            width: 100%;
+            height: 220px;
+            object-fit: cover;
+            border-radius: 10px;
+        }
     </style>
 
     @stack('styles')

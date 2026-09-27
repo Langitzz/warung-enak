@@ -57,6 +57,7 @@ class Pesanan extends Model
     // (lihat buat() di bawah). Jangan pernah memanggil Pesanan::create($request->all()).
     protected $fillable = [
         'user_id',
+        'sumber',
         'nama_pelanggan',
         'no_whatsapp',
         'catatan',
@@ -149,9 +150,9 @@ class Pesanan extends Model
      *
      * Harga TIDAK PERNAH diambil dari input: selalu dibaca dari database di sini.
      */
-    public static function buat(array $pemesan, array $barisItem, ?int $userId = null, string $status = 'menunggu'): self
+    public static function buat(array $pemesan, array $barisItem, ?int $userId = null, string $status = 'menunggu', string $sumber = 'online'): self
     {
-        return DB::transaction(function () use ($pemesan, $barisItem, $userId, $status) {
+        return DB::transaction(function () use ($pemesan, $barisItem, $userId, $status, $sumber) {
 
             // Gabungkan baris dengan menu yang sama supaya tidak dobel
             $jumlahPerMenu = [];
@@ -204,6 +205,7 @@ class Pesanan extends Model
 
             $pesanan = static::create([
                 'user_id'        => $userId,
+                'sumber'         => $sumber,
                 'nama_pelanggan' => $pemesan['nama_pelanggan'],
                 'no_whatsapp'    => $pemesan['no_whatsapp'],
                 'catatan'        => $pemesan['catatan'] ?? null,

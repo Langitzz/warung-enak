@@ -318,6 +318,10 @@
                         <span class="fw-bold" id="labelKembalian">Rp0</span>
                     </div>
 
+                    <button type="button" class="btn btn-warning w-100 mb-2" id="btnTahan" disabled>
+                        <i class="mdi mdi-clock-outline"></i> Tahan Pesanan
+                    </button>
+
                     <button type="button" class="btn btn-success w-100" id="btnBayar" disabled>
                         <i class="mdi mdi-cash-register"></i> Proses Bayar
                     </button>
@@ -365,6 +369,27 @@
             </div>
         </div>
     </div>
+
+    {{-- Modal isi nama pelanggan/meja saat menahan pesanan --}}
+    <div class="modal fade" id="modalTahan" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Tahan Pesanan</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Tutup"></button>
+                </div>
+                <div class="modal-body">
+                    <label for="namaTahan" class="form-label">Nama Pelanggan / No. Meja</label>
+                    <input type="text" class="form-control" id="namaTahan" placeholder="Contoh: Meja 5, atau nama pelanggan">
+                    <div class="text-danger small mt-1 d-none" id="errorTahan"></div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-light" data-bs-dismiss="modal">Batal</button>
+                    <button type="button" class="btn btn-warning" id="btnSimpanTahan">Simpan</button>
+                </div>
+            </div>
+        </div>
+    </div>
 @endsection
 
 @push('scripts')
@@ -374,6 +399,7 @@
             let uangBayar = 0;
             const csrfToken = document.querySelector('meta[name="csrf-token"]').content;
             const modalStruk = new bootstrap.Modal(document.getElementById('modalStruk'));
+            const modalTahan = new bootstrap.Modal(document.getElementById('modalTahan'));
 
             function tampilkanStruk(data, uangDibayar) {
                 document.getElementById('strukKode').textContent = data.kode;
@@ -400,6 +426,61 @@
                 window.print();
             });
 
+            document.getElementById('btnTahan').addEventListener('click', function () {
+                document.getElementById('namaTahan').value = '';
+                document.getElementById('errorTahan').classList.add('d-none');
+                modalTahan.show();
+            });
+
+            document.getElementById('btnSimpanTahan').addEventListener('click', function () {
+                const namaPelanggan = document.getElementById('namaTahan').value.trim();
+                const errorEl = document.getElementById('errorTahan');
+
+                if (!namaPelanggan) {
+                    errorEl.textContent = 'Isi nama pelanggan atau nomor meja dulu.';
+                    errorEl.classList.remove('d-none');
+                    return;
+                }
+
+                const items = Object.entries(pesanan).map(([id, item]) => ({
+                    menu_id: Number(id),
+                    jumlah: item.qty
+                }));
+
+                const tombol = this;
+                tombol.disabled = true;
+                const teksAsli = tombol.innerHTML;
+                tombol.innerHTML = 'Menyimpan...';
+
+                fetch('{{ route('kasir.tahan') }}', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'X-CSRF-TOKEN': csrfToken,
+                            'Accept': 'application/json',
+                        },
+                        body: JSON.stringify({ nama_pelanggan: namaPelanggan, items }),
+                    })
+                    .then(async (res) => {
+                        const data = await res.json();
+                        if (!res.ok) throw new Error(data.message || 'Gagal menahan pesanan.');
+                        return data;
+                    })
+                    .then((data) => {
+                        modalTahan.hide();
+                        alert('Pesanan ' + data.kode + ' ditahan. Bisa diselesaikan lewat halaman Pesanan Tertahan.');
+                        Object.keys(pesanan).forEach((id) => delete pesanan[id]);
+                        renderPesanan();
+                    })
+                    .catch((err) => {
+                        errorEl.textContent = err.message;
+                        errorEl.classList.remove('d-none');
+                    })
+                    .finally(() => {
+                        tombol.disabled = false;
+                        tombol.innerHTML = teksAsli;
+                    });
+            });
             const formatRupiah = (angka) => 'Rp' + Number(angka).toLocaleString('id-ID');
 
             // Filter kategori + cari menu, langsung di browser tanpa reload halaman
@@ -475,6 +556,7 @@
                 const label = document.getElementById('labelKembalian');
                 label.textContent = formatRupiah(kembalian < 0 ? 0 : kembalian);
                 document.getElementById('btnBayar').disabled = total <= 0 || uangBayar < total;
+                document.getElementById('btnTahan').disabled = total <= 0;
             }
 
             // Klik kartu menu => tambah ke pesanan

@@ -60,7 +60,7 @@ class RoleController extends Controller
                 ['teks' => 'Melihat dashboard kondisi operasional', 'siap' => true],
                 ['teks' => 'Memantau seluruh pesanan (hanya lihat)', 'siap' => true],
                 ['teks' => 'Melihat Laporan Penjualan', 'siap' => true],
-                ['teks' => 'Melihat aktivitas operasional', 'siap' => false],
+                ['teks' => 'Melihat aktivitas operasional', 'siap' => true],
                 ['teks' => 'Mengelola profil sendiri dan mengganti password', 'siap' => true],
             ],
             'batasan' => [

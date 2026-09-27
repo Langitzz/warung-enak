@@ -31,4 +31,10 @@
         color: #212529;
         background-image: url('{{ asset('admin/assets/images/arrow-down-dark.svg') }}');
     }
-</style>f
+
+    /* Perbaikan bentrok CSS template: placeholder di kolom isian terlalu pucat, nyaris tidak kelihatan */
+    .form-control::placeholder {
+        color: #6c757d;
+        opacity: 1;
+    }
+</style>

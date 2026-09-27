@@ -60,6 +60,12 @@ Route::prefix('kasir')
             ->name('index');
         Route::post('/bayar', [KasirController::class, 'bayar'])
             ->name('bayar');
+        Route::post('/tahan', [KasirController::class, 'tahan'])
+            ->name('tahan');
+        Route::get('/tertahan', [KasirController::class, 'tertahan'])
+            ->name('tertahan');
+        Route::patch('/tertahan/{pesanan}/selesaikan', [KasirController::class, 'selesaikan'])
+            ->name('selesaikan');
     });
 
 // ================= CHEF =================

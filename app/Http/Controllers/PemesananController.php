@@ -150,7 +150,7 @@ class PemesananController extends Controller
             ->all();
 
         try {
-            $pesanan = Pesanan::buat($data, $items, auth()->id());
+            $pesanan = Pesanan::buat($data, $items, auth()->id(), sumber: 'online');
         } catch (ValidationException $e) {
             return redirect()->route('keranjang.index')
                 ->with('error', collect($e->errors())->flatten()->first());

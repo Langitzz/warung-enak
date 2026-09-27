@@ -84,7 +84,8 @@ class PesananController extends Controller
                 'no_whatsapp'    => $data['no_whatsapp'],
                 'catatan'        => $data['catatan'] ?? null,
             ],
-            $data['items']
+            $data['items'],
+            sumber: 'kasir'
         );
 
         return redirect()
