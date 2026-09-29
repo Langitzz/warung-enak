@@ -15,6 +15,7 @@ class Pengaturan extends Model
         'jam_tutup',
         'deskripsi',
         'logo',
+        'tahun_berdiri',
 
         // Pengaturan sistem
         'zona_waktu',
@@ -28,6 +29,7 @@ class Pengaturan extends Model
     protected function casts(): array
     {
         return [
+            'tahun_berdiri'  => 'integer',
             'pajak'          => 'integer',
             'biaya_layanan'  => 'integer',
             'terima_pesanan' => 'boolean',

@@ -79,6 +79,20 @@
                             </div>
                         </div>
 
+                        {{-- Tahun Berdiri --}}
+                        <div class="mb-3">
+                            <label for="tahun_berdiri" class="form-label">Tahun Berdiri <span class="text-muted">(boleh
+                                    dikosongkan)</span></label>
+                            <input type="number" id="tahun_berdiri" name="tahun_berdiri" min="1900" max="{{ now()->year }}"
+                                class="form-control @error('tahun_berdiri') is-invalid @enderror"
+                                placeholder="Contoh: {{ now()->year }}"
+                                value="{{ old('tahun_berdiri', $pengaturan->tahun_berdiri) }}">
+                            @error('tahun_berdiri')
+                                <div class="invalid-feedback">{{ $message }}</div>
+                            @enderror
+                            <div class="form-text">Dipakai untuk menghitung "Tahun Beroperasi" di landing page.</div>
+                        </div>
+
                         {{-- Deskripsi --}}
                         <div class="mb-3">
                             <label for="deskripsi" class="form-label">Deskripsi Singkat <span class="text-muted">(boleh

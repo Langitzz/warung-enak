@@ -39,6 +39,7 @@ class PengaturanController extends Controller
                 'jam_tutup' => ['nullable', 'date_format:H:i'],
                 'deskripsi' => ['nullable', 'string', 'max:500'],
                 'logo' => ['nullable', 'image', 'mimes:jpg,jpeg,png,webp', 'max:2048'],
+                'tahun_berdiri' => ['nullable', 'integer', 'min:1900', 'max:' . now()->year],
             ],
             [
                 'nama_warung.required' => 'Nama warung wajib diisi.',
@@ -50,6 +51,9 @@ class PengaturanController extends Controller
                 'logo.image' => 'Logo harus berupa gambar.',
                 'logo.mimes' => 'Logo harus berformat jpg, jpeg, png, atau webp.',
                 'logo.max' => 'Ukuran logo maksimal 2 MB.',
+                'tahun_berdiri.integer' => 'Tahun berdiri harus berupa angka.',
+                'tahun_berdiri.min' => 'Tahun berdiri minimal 1900.',
+                'tahun_berdiri.max' => 'Tahun berdiri tidak boleh melebihi tahun ini.',
             ]
         );
 

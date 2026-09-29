@@ -19,6 +19,15 @@
         $pengaturan = \App\Models\Pengaturan::ambil();
         $namaWarung = \App\Models\Pengaturan::namaWarung();
 
+        // Statistik landing page, dihitung asli dari database (bukan angka karangan)
+        $statMenu = \App\Models\Menu::where('tersedia', true)
+            ->whereHas('kategori', fn($q) => $q->where('aktif', true))
+            ->count();
+        $statPelanggan = \App\Models\User::where('role', 'pelanggan')->where('aktif', true)->count();
+        $statPesananSelesai = \App\Models\Pesanan::where('status', 'selesai')->count();
+        // Tahun Beroperasi cuma ditampilkan kalau Tahun Berdiri sudah diisi dan hasilnya minimal 1 tahun
+        $statTahunBeroperasi = $pengaturan->tahun_berdiri ? now()->year - $pengaturan->tahun_berdiri : null;
+
         // Menu Favorit: 6 menu tersedia terbaru (kategorinya juga harus aktif).
         // Belum ada data "menu terlaris" yang cukup, jadi sementara pakai ini dulu.
         $menuFavorit = \App\Models\Menu::with('kategori')
@@ -230,33 +239,35 @@
     {{-- ================= Kenapa Pilih Kami ================= --}}
     <section id="stats" class="stats section">
         <div class="container" data-aos="fade-up" data-aos-delay="100">
-            <div class="row gy-4">
+            <div class="row gy-4 justify-content-center">
                 <div class="col-lg-3 col-md-6">
                     <div class="stats-item text-center w-100 h-100">
-                        <span data-purecounter-start="0" data-purecounter-end="25" data-purecounter-duration="1"
+                        <span data-purecounter-start="0" data-purecounter-end="{{ $statMenu }}" data-purecounter-duration="1"
                             class="purecounter"></span>
                         <p>Menu Tersedia</p>
                     </div>
                 </div>
                 <div class="col-lg-3 col-md-6">
                     <div class="stats-item text-center w-100 h-100">
-                        <span data-purecounter-start="0" data-purecounter-end="500" data-purecounter-duration="1"
+                        <span data-purecounter-start="0" data-purecounter-end="{{ $statPelanggan }}" data-purecounter-duration="1"
                             class="purecounter"></span>
-                        <p>Pelanggan Puas</p>
+                        <p>Pelanggan Terdaftar</p>
                     </div>
                 </div>
-                <div class="col-lg-3 col-md-6">
-                    <div class="stats-item text-center w-100 h-100">
-                        <span data-purecounter-start="0" data-purecounter-end="3" data-purecounter-duration="1"
-                            class="purecounter"></span>
-                        <p>Tahun Beroperasi</p>
+                @if ($statTahunBeroperasi >= 1)
+                    <div class="col-lg-3 col-md-6">
+                        <div class="stats-item text-center w-100 h-100">
+                            <span data-purecounter-start="0" data-purecounter-end="{{ $statTahunBeroperasi }}" data-purecounter-duration="1"
+                                class="purecounter"></span>
+                            <p>Tahun Beroperasi</p>
+                        </div>
                     </div>
-                </div>
+                @endif
                 <div class="col-lg-3 col-md-6">
                     <div class="stats-item text-center w-100 h-100">
-                        <span data-purecounter-start="0" data-purecounter-end="1200" data-purecounter-duration="1"
+                        <span data-purecounter-start="0" data-purecounter-end="{{ $statPesananSelesai }}" data-purecounter-duration="1"
                             class="purecounter"></span>
-                        <p>Pesanan Terkirim</p>
+                        <p>Pesanan Selesai</p>
                     </div>
                 </div>
             </div>
