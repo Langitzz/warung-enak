@@ -27,7 +27,7 @@
                             <label for="nama_warung" class="form-label">Nama Warung</label>
                             <input type="text" id="nama_warung" name="nama_warung"
                                 class="form-control @error('nama_warung') is-invalid @enderror"
-                                value="{{ old('nama_warung', $pengaturan->nama_warung) }}">
+                                value="{{ old('nama_warung', $pengaturan->nama_warung) }}" autocomplete="off">
                             @error('nama_warung')
                                 <div class="invalid-feedback">{{ $message }}</div>
                             @enderror
@@ -39,7 +39,8 @@
                                     class="text-muted">(boleh dikosongkan)</span></label>
                             <input type="text" id="telepon" name="telepon"
                                 class="form-control @error('telepon') is-invalid @enderror"
-                                value="{{ old('telepon', $pengaturan->telepon) }}" placeholder="Contoh: 0812-3456-7890">
+                                value="{{ old('telepon', $pengaturan->telepon) }}" placeholder="Contoh: 0812-3456-7890"
+                                autocomplete="off">
                             @error('telepon')
                                 <div class="invalid-feedback">{{ $message }}</div>
                             @enderror
@@ -50,7 +51,7 @@
                             <label for="alamat" class="form-label">Alamat <span class="text-muted">(boleh
                                     dikosongkan)</span></label>
                             <textarea id="alamat" name="alamat" rows="2" class="form-control @error('alamat') is-invalid @enderror"
-                                placeholder="Contoh: Jl. Contoh No. 12, Kota Contoh">{{ old('alamat', $pengaturan->alamat) }}</textarea>
+                                placeholder="Contoh: Jl. Contoh No. 12, Kota Contoh" autocomplete="off">{{ old('alamat', $pengaturan->alamat) }}</textarea>
                             @error('alamat')
                                 <div class="invalid-feedback">{{ $message }}</div>
                             @enderror
@@ -98,7 +99,7 @@
                             <label for="deskripsi" class="form-label">Deskripsi Singkat <span class="text-muted">(boleh
                                     dikosongkan)</span></label>
                             <textarea id="deskripsi" name="deskripsi" rows="3" class="form-control @error('deskripsi') is-invalid @enderror"
-                                placeholder="Contoh: Warung makan sederhana dengan menu nasi goreng, mie, dan kwetiau.">{{ old('deskripsi', $pengaturan->deskripsi) }}</textarea>
+                                placeholder="Contoh: Warung makan sederhana dengan menu nasi goreng, mie, dan kwetiau." autocomplete="off">{{ old('deskripsi', $pengaturan->deskripsi) }}</textarea>
                             @error('deskripsi')
                                 <div class="invalid-feedback">{{ $message }}</div>
                             @enderror
@@ -132,6 +133,36 @@
                             <input type="file" id="logo" name="logo" accept="image/*"
                                 class="form-control @error('logo') is-invalid @enderror">
                             @error('logo')
+                                <div class="invalid-feedback">{{ $message }}</div>
+                            @enderror
+                        </div>
+
+                        {{-- QRIS Statis --}}
+                        <div class="mb-4">
+                            <label for="qris" class="form-label">QRIS Statis <span class="text-muted">(boleh
+                                    dikosongkan, maks 2 MB)</span></label>
+                            <p class="small text-muted">Gambar QR tetap untuk dipindai pelanggan di kasir. Bukan QRIS
+                                dinamis — nominalnya tidak otomatis menyesuaikan tiap transaksi.</p>
+
+                            @if ($pengaturan->qris)
+                                <div class="mb-2">
+                                    <img src="{{ asset('storage/' . $pengaturan->qris) }}" alt="QRIS"
+                                        style="width: 96px; height: 96px; object-fit: cover; border-radius: 8px;">
+                                    <p class="small text-muted mb-0">QRIS saat ini. Pilih file baru kalau mau
+                                        menggantinya.</p>
+
+                                    <div class="form-check mt-2" style="padding-left: 1.5em;">
+                                        <input class="form-check-input" type="checkbox" id="hapus_qris" name="hapus_qris"
+                                            value="1">
+                                        <label class="form-check-label" for="hapus_qris" style="margin-left: 0;">Hapus
+                                            QRIS ini</label>
+                                    </div>
+                                </div>
+                            @endif
+
+                            <input type="file" id="qris" name="qris" accept="image/*"
+                                class="form-control @error('qris') is-invalid @enderror">
+                            @error('qris')
                                 <div class="invalid-feedback">{{ $message }}</div>
                             @enderror
                         </div>

@@ -325,10 +325,12 @@
                     <form action="#" method="post" class="php-email-form" data-aos="fade-up" data-aos-delay="200">
                         <div class="row gy-4">
                             <div class="col-md-6">
-                                <input type="text" name="name" class="form-control" placeholder="Nama" required>
+                                <input type="text" name="name" class="form-control" placeholder="Nama" required
+                                    autocomplete="name">
                             </div>
                             <div class="col-md-6">
-                                <input type="email" class="form-control" name="email" placeholder="Email" required>
+                                <input type="email" class="form-control" name="email" placeholder="Email" required
+                                    autocomplete="email">
                             </div>
                             <div class="col-md-12">
                                 <input type="text" class="form-control" name="subject" placeholder="Subjek" required>

@@ -33,13 +33,13 @@
                                 <div class="mb-3">
                                     <label class="form-label">Kode Pesanan</label>
                                     <input type="text" name="kode" class="form-control" value="{{ old('kode') }}"
-                                        placeholder="Contoh: PSN-0008" required>
+                                        placeholder="Contoh: PSN-0008" required autocomplete="off">
                                 </div>
                                 <div class="mb-4">
                                     <label class="form-label">Nomor WhatsApp</label>
                                     <input type="text" name="no_whatsapp" class="form-control"
                                         value="{{ old('no_whatsapp') }}" placeholder="Nomor yang dipakai saat checkout"
-                                        required>
+                                        required autocomplete="tel">
                                 </div>
                                 <button type="submit" class="btn-get-started border-0 w-100">Cek Pesanan</button>
                             </form>

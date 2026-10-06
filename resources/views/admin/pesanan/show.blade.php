@@ -157,7 +157,7 @@
 
                     @forelse ($pesanan->statusBerikutnya() as $statusBaru)
                         <form action="{{ route('admin.pesanan.status', $pesanan) }}" method="POST" class="mb-2"
-                            @if ($statusBaru === 'dibatalkan') onsubmit="return confirm('Yakin mau membatalkan pesanan {{ $pesanan->kode }}?')" @endif>
+                            @if ($statusBaru === 'dibatalkan') data-confirm="Yakin mau membatalkan pesanan {{ $pesanan->kode }}?" data-confirm-ya="Ya, Batalkan" @endif>
                             @csrf
                             @method('PATCH')
                             <input type="hidden" name="status" value="{{ $statusBaru }}">
@@ -185,7 +185,7 @@
                 {{-- Hapus hanya untuk pesanan yang dibatalkan (controller juga menolaknya) --}}
                 @if ($pesanan->bolehDihapus())
                     <form action="{{ route('admin.pesanan.destroy', $pesanan) }}" method="POST"
-                        onsubmit="return confirm('Yakin mau menghapus pesanan {{ $pesanan->kode }}? Ini tidak bisa dibatalkan.')">
+                        data-confirm="Yakin mau menghapus pesanan {{ $pesanan->kode }}? Ini tidak bisa dibatalkan." data-confirm-ya="Ya, Hapus">
                         @csrf
                         @method('DELETE')
                         <button type="submit" class="btn btn-danger">

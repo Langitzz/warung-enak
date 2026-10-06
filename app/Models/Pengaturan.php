@@ -15,6 +15,7 @@ class Pengaturan extends Model
         'jam_tutup',
         'deskripsi',
         'logo',
+        'qris',
         'tahun_berdiri',
 
         // Pengaturan sistem

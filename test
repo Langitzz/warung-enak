@@ -1,0 +1,463 @@
+p
+mueheheh
+
+Bisa. Aku rangkum **dari awal sampai kondisi terakhir**, berdasarkan ZIP asli yang sudah aku cek langsung. Jadi ini bisa kamu jadikan catatan perubahan project.
+
+> **Catatan penting:** ZIP asli yang kamu kirim **belum berisi perubahan-perubahan ini**. Di bawah ini adalah rangkuman **perubahan yang kita kerjakan/targetkan setelah ZIP asli**, bukan klaim bahwa ZIP asli sudah berubah.
+
+---
+
+# Rangkuman Perubahan — Data Pengguna
+
+## Tujuan
+
+Kita ingin membuat:
+
+> **Pengguna bernama `Zii` dengan role Owner tidak boleh diedit dan tidak boleh dihapus.**
+
+Sedangkan pengguna lain seperti:
+
+* Chef
+* Supervisor
+* Manda cute
+* pengguna lainnya
+
+tetap menggunakan aturan normal.
+
+Selain itu, aturan lama:
+
+> **akun yang sedang login tidak boleh menghapus dirinya sendiri**
+
+tetap dipertahankan.
+
+---
+
+# 1. File Controller
+
+### File yang dicari
+
+Dari ZIP asli:
+
+```text
+app\Http\Controllers\Admin\PenggunaController.php
+```
+
+Di dalamnya terdapat:
+
+```php
+public function edit(User $pengguna)
+```
+
+```php
+public function update(Request $request, User $pengguna)
+```
+
+```php
+public function destroy(Request $request, User $pengguna)
+```
+
+Ketiga method inilah yang berkaitan dengan keamanan Edit/Hapus.
+
+---
+
+## A. Method `edit()`
+
+### Kondisi awal
+
+Di ZIP asli:
+
+```php
+public function edit(User $pengguna)
+{
+    $roles = self::ROLE;
+
+    return view('admin.pengguna.edit', compact('pengguna', 'roles'));
+}
+```
+
+### Yang ditambahkan
+
+Sebelum `$roles`:
+
+```php
+// Akun Zii tidak boleh diedit.
+if ($pengguna->name === 'Zii') {
+    return redirect()
+        ->route('admin.pengguna.index')
+        ->with('error', 'Akun Zii tidak dapat diedit.');
+}
+```
+
+Sehingga menjadi:
+
+```php
+public function edit(User $pengguna)
+{
+    // Akun Zii tidak boleh diedit.
+    if ($pengguna->name === 'Zii') {
+        return redirect()
+            ->route('admin.pengguna.index')
+            ->with('error', 'Akun Zii tidak dapat diedit.');
+    }
+
+    $roles = self::ROLE;
+
+    return view('admin.pengguna.edit', compact('pengguna', 'roles'));
+}
+```
+
+---
+
+# 2. Method `update()`
+
+### Kondisi awal
+
+ZIP asli memiliki:
+
+```php
+public function update(Request $request, User $pengguna)
+{
+    // Pengaman: admin tidak boleh mengubah role atau menonaktifkan akunnya sendiri.
+    // Nilainya dipaksa tetap di sisi server, walau form dimanipulasi.
+    if ($pengguna->is($request->user())) {
+        $request->merge([
+            'role'  => $pengguna->role,
+            'aktif' => true,
+        ]);
+    }
+
+    // ...
+}
+```
+
+### Yang ditambahkan
+
+Di **paling awal method**:
+
+```php
+// Akun Zii tidak boleh diedit.
+if ($pengguna->name === 'Zii') {
+    return redirect()
+        ->route('admin.pengguna.index')
+        ->with('error', 'Akun Zii tidak dapat diedit.');
+}
+```
+
+Jadi:
+
+```php
+public function update(Request $request, User $pengguna)
+{
+    // Akun Zii tidak boleh diedit.
+    if ($pengguna->name === 'Zii') {
+        return redirect()
+            ->route('admin.pengguna.index')
+            ->with('error', 'Akun Zii tidak dapat diedit.');
+    }
+
+    // Pengaman: admin tidak boleh mengubah role atau menonaktifkan akunnya sendiri.
+    // Nilainya dipaksa tetap di sisi server, walau form dimanipulasi.
+    if ($pengguna->is($request->user())) {
+        $request->merge([
+            'role'  => $pengguna->role,
+            'aktif' => true,
+        ]);
+    }
+
+    // kode update selanjutnya tetap
+}
+```
+
+**Kenapa perlu di `update()` juga?**
+
+Karena tombol Edit yang disabled hanya melindungi tampilan.
+
+Orang masih bisa mencoba mengirim request update secara manual.
+
+Jadi controller tetap harus menolak perubahan Zii.
+
+---
+
+# 3. Method `destroy()`
+
+### Kondisi awal
+
+ZIP asli:
+
+```php
+public function destroy(Request $request, User $pengguna)
+{
+    // Pengaman: admin tidak boleh menghapus akunnya sendiri
+    if ($pengguna->is($request->user())) {
+        return redirect()
+            ->route('admin.pengguna.index')
+            ->with('error', 'Kamu tidak bisa menghapus akunmu sendiri.');
+    }
+
+    if ($pengguna->foto) {
+        Storage::disk('public')->delete($pengguna->foto);
+    }
+
+    $pengguna->delete();
+
+    return redirect()
+        ->route('admin.pengguna.index')
+        ->with('success', 'Pengguna berhasil dihapus.');
+}
+```
+
+### Yang ditambahkan
+
+Sebelum pengecekan akun sendiri:
+
+```php
+// Akun Zii tidak boleh dihapus.
+if ($pengguna->name === 'Zii') {
+    return redirect()
+        ->route('admin.pengguna.index')
+        ->with('error', 'Akun Zii tidak dapat dihapus.');
+}
+```
+
+Hasilnya:
+
+```php
+public function destroy(Request $request, User $pengguna)
+{
+    // Akun Zii tidak boleh dihapus.
+    if ($pengguna->name === 'Zii') {
+        return redirect()
+            ->route('admin.pengguna.index')
+            ->with('error', 'Akun Zii tidak dapat dihapus.');
+    }
+
+    // Pengaman: admin tidak boleh menghapus akunnya sendiri
+    if ($pengguna->is($request->user())) {
+        return redirect()
+            ->route('admin.pengguna.index')
+            ->with('error', 'Kamu tidak bisa menghapus akunmu sendiri.');
+    }
+
+    if ($pengguna->foto) {
+        Storage::disk('public')->delete($pengguna->foto);
+    }
+
+    $pengguna->delete();
+
+    return redirect()
+        ->route('admin.pengguna.index')
+        ->with('success', 'Pengguna berhasil dihapus.');
+}
+```
+
+---
+
+# 4. File Tampilan Data Pengguna
+
+### File yang dicari
+
+Dari ZIP:
+
+```text
+resources\views\admin\pengguna\index.blade.php
+```
+
+Ini adalah file tabel **Data Pengguna** yang ada di screenshot kamu.
+
+Bagian yang kita ubah adalah:
+
+```php
+<td>
+    <div class="d-flex gap-1">
+        ...
+    </div>
+</td>
+```
+
+yaitu kolom **Aksi**.
+
+---
+
+# 5. Logika Edit
+
+Awalnya semua pengguna memiliki:
+
+```php
+<a href="{{ route('admin.pengguna.edit', $pengguna) }}"
+    class="btn btn-warning btn-sm" title="Edit" aria-label="Edit">
+    <i class="mdi mdi-pencil"></i>
+</a>
+```
+
+Kemudian kita ubah supaya **Zii** mendapat tombol disabled.
+
+Konsep akhirnya:
+
+```php
+@if ($pengguna->name === 'Zii')
+
+    <span title="Akun Owner tidak dapat diedit">
+        <button type="button"
+            class="btn btn-warning btn-sm"
+            disabled
+            aria-label="Edit">
+            <i class="mdi mdi-pencil"></i>
+        </button>
+    </span>
+
+@else
+
+    <a href="{{ route('admin.pengguna.edit', $pengguna) }}"
+        class="btn btn-warning btn-sm"
+        title="Edit"
+        aria-label="Edit">
+        <i class="mdi mdi-pencil"></i>
+    </a>
+
+@endif
+```
+
+Jadi:
+
+```text
+Zii       → Edit disabled
+Chef      → Edit normal
+Supervisor→ Edit normal
+Manda     → Edit normal
+```
+
+---
+
+# 6. Logika Hapus
+
+ZIP asli sudah memiliki pengecualian:
+
+```php
+@if ($pengguna->is(auth()->user()))
+```
+
+untuk mencegah akun sendiri dihapus.
+
+Kita **tidak menghapus aturan tersebut**.
+
+Kita menambahkan pengecualian Zii di luarnya.
+
+Struktur akhirnya:
+
+```php
+@if ($pengguna->name === 'Zii')
+
+    <span title="Akun Owner tidak dapat dihapus">
+        <button type="button"
+            class="btn btn-danger btn-sm text-white"
+            disabled
+            aria-label="Hapus">
+            <i class="mdi mdi-delete"></i>
+        </button>
+    </span>
+
+@else
+
+    <form action="{{ route('admin.pengguna.destroy', $pengguna) }}"
+        method="POST"
+        onsubmit="return confirm('Yakin mau menghapus pengguna ini?')">
+
+        @csrf
+        @method('DELETE')
+
+        @if ($pengguna->is(auth()->user()))
+
+            <span title="Kamu tidak bisa menghapus akunmu sendiri">
+                <button type="button"
+                    class="btn btn-danger btn-sm text-white"
+                    disabled
+                    aria-label="Hapus">
+                    <i class="mdi mdi-delete"></i>
+                </button>
+            </span>
+
+        @else
+
+            <button type="submit"
+                class="btn btn-danger btn-sm"
+                title="Hapus"
+                aria-label="Hapus">
+                <i class="mdi mdi-delete"></i>
+            </button>
+
+        @endif
+
+    </form>
+
+@endif
+```
+
+---
+
+# 7. Kenapa tadi Chef & Supervisor sempat ikut disabled?
+
+Itu terjadi karena kita sebelumnya memakai pengecekan:
+
+```php
+$pengguna->role === 'owner'
+```
+
+Padahal setelah kamu jelaskan, kebutuhan sebenarnya adalah:
+
+> **hanya Zii yang dilindungi berdasarkan nama.**
+
+Jadi akhirnya pengecekannya diganti menjadi:
+
+```php
+$pengguna->name === 'Zii'
+```
+
+Ini yang membuat:
+
+```text
+Zii       → disabled
+Chef      → normal
+Supervisor→ normal
+Manda cute→ normal
+```
+
+Dan kamu sudah melakukan testing bahwa **Chef dan Supervisor kembali normal**. ✅
+
+---
+
+# Ringkasan file
+
+Jadi secara keseluruhan hanya ada **2 file utama** yang perlu berubah:
+
+| File                                                | Bagian              | Perubahan                    |
+| --------------------------------------------------- | ------------------- | ---------------------------- |
+| `app/Http/Controllers/Admin/PenggunaController.php` | `edit()`            | Zii tidak boleh membuka edit |
+|                                                     | `update()`          | Zii tidak boleh diperbarui   |
+|                                                     | `destroy()`         | Zii tidak boleh dihapus      |
+| `resources/views/admin/pengguna/index.blade.php`    | tombol Edit         | Zii disabled                 |
+|                                                     | tombol Hapus        | Zii disabled                 |
+|                                                     | aturan akun sendiri | **tetap dipertahankan**      |
+
+### Alur akhirnya
+
+```text
+                    DATA PENGGUNA
+                         │
+                         ▼
+                 Apakah nama = Zii?
+                    /          \
+                  YA            TIDAK
+                  │               │
+                  ▼               ▼
+           EDIT  🔒             EDIT ✏️
+           HAPUS 🔒             HAPUS 🗑️
+                                  │
+                                  ▼
+                         Apakah akun sendiri?
+                            /          \
+                          YA            TIDAK
+                          │               │
+                       HAPUS 🔒        HAPUS 🗑️
+```
+
+**Catatan:** karena kamu meminta pengecualian berdasarkan **nama `Zii`**, kalau suatu saat nama akun Zii diubah menjadi nama lain, pengecualian berdasarkan nama juga ikut hilang. Kalau nanti kamu mau, kita bisa membuatnya berdasarkan **ID/email akun Owner** supaya lebih aman dan tidak tergantung nama.

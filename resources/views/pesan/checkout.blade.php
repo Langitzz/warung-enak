@@ -28,13 +28,14 @@
                         <div class="mb-3">
                             <label class="form-label">Nama</label>
                             <input type="text" name="nama_pelanggan" class="form-control"
-                                value="{{ old('nama_pelanggan', auth()->user()->name ?? '') }}" required>
+                                value="{{ old('nama_pelanggan', auth()->user()->name ?? '') }}" required
+                                autocomplete="name">
                         </div>
                         <div class="mb-3">
                             <label class="form-label">Nomor WhatsApp</label>
                             <input type="text" name="no_whatsapp" class="form-control"
                                 value="{{ old('no_whatsapp', auth()->user()->no_whatsapp ?? '') }}"
-                                placeholder="08xxxxxxxxxx" required>
+                                placeholder="08xxxxxxxxxx" required autocomplete="tel">
                         </div>
                         <div class="mb-4">
                             <label class="form-label">Catatan (opsional)</label>

@@ -20,6 +20,7 @@ class KasirController extends Controller
 
         return view('kasir.index', [
             'menus' => $menus,
+            'qris' => \App\Models\Pengaturan::ambil()->qris,
         ]);
     }
 
@@ -32,6 +33,7 @@ class KasirController extends Controller
             'items' => ['required', 'array', 'min:1'],
             'items.*.menu_id' => ['required', 'integer'],
             'items.*.jumlah' => ['required', 'integer', 'min:1'],
+            'metode_bayar' => ['required', 'in:tunai,debit,qris'],
         ]);
 
         try {
@@ -44,7 +46,8 @@ class KasirController extends Controller
                 $data['items'],
                 null,
                 'selesai',
-                'kasir'
+                'kasir',
+                $data['metode_bayar']
             );
         } catch (ValidationException $e) {
             return response()->json([
@@ -61,6 +64,7 @@ class KasirController extends Controller
             'pajak' => $pesanan->pajak,
             'biaya_layanan' => $pesanan->biaya_layanan,
             'total' => $pesanan->total,
+            'metode_bayar' => $pesanan->metode_bayar,
             'items' => $pesanan->items->map(fn ($item) => [
                 'nama' => $item->nama_menu,
                 'jumlah' => $item->jumlah,
@@ -127,6 +131,7 @@ class KasirController extends Controller
     {
         $data = $request->validate([
             'uang_dibayar' => ['required', 'integer', 'min:0'],
+            'metode_bayar' => ['required', 'in:tunai,debit,qris'],
         ]);
 
         if (! $pesanan->bolehKe('selesai')) {
@@ -141,7 +146,7 @@ class KasirController extends Controller
             ], 422);
         }
 
-        $pesanan->update(['status' => 'selesai']);
+        $pesanan->update(['status' => 'selesai', 'metode_bayar' => $data['metode_bayar']]);
         $pesanan->load('items');
 
         return response()->json([
@@ -151,6 +156,7 @@ class KasirController extends Controller
             'pajak' => $pesanan->pajak,
             'biaya_layanan' => $pesanan->biaya_layanan,
             'total' => $pesanan->total,
+            'metode_bayar' => $pesanan->metode_bayar,
             'items' => $pesanan->items->map(fn ($item) => [
                 'nama' => $item->nama_menu,
                 'jumlah' => $item->jumlah,

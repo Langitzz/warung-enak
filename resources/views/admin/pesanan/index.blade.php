@@ -89,7 +89,7 @@
 
                                         {{-- Hapus harus lewat form dengan method DELETE, bukan link biasa --}}
                                         <form action="{{ route('admin.pesanan.destroy', $pesanan) }}" method="POST"
-                                            onsubmit="return confirm('Yakin mau menghapus pesanan {{ $pesanan->kode }}?')">
+                                            data-confirm="Yakin mau menghapus pesanan {{ $pesanan->kode }}?" data-confirm-ya="Ya, Hapus">
                                             @csrf
                                             @method('DELETE')
 

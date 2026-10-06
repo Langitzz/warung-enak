@@ -150,9 +150,9 @@ class Pesanan extends Model
      *
      * Harga TIDAK PERNAH diambil dari input: selalu dibaca dari database di sini.
      */
-    public static function buat(array $pemesan, array $barisItem, ?int $userId = null, string $status = 'menunggu', string $sumber = 'online'): self
+    public static function buat(array $pemesan, array $barisItem, ?int $userId = null, string $status = 'menunggu', string $sumber = 'online', ?string $metodeBayar = null): self
     {
-        return DB::transaction(function () use ($pemesan, $barisItem, $userId, $status, $sumber) {
+        return DB::transaction(function () use ($pemesan, $barisItem, $userId, $status, $sumber, $metodeBayar) {
 
             // Gabungkan baris dengan menu yang sama supaya tidak dobel
             $jumlahPerMenu = [];
@@ -210,6 +210,7 @@ class Pesanan extends Model
                 'no_whatsapp'    => $pemesan['no_whatsapp'],
                 'catatan'        => $pemesan['catatan'] ?? null,
                 'status'         => $status,
+                'metode_bayar'   => $metodeBayar,
                 'subtotal'       => $subtotal,
                 'pajak'          => $pajak,
                 'biaya_layanan'  => $biayaLayanan,

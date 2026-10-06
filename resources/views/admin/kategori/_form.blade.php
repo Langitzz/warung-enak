@@ -6,7 +6,7 @@
 <div class="mb-3">
     <label for="nama" class="form-label">Nama Kategori</label>
     <input type="text" id="nama" name="nama" class="form-control @error('nama') is-invalid @enderror"
-        value="{{ old('nama', $kategori->nama ?? '') }}" placeholder="Contoh: Nasi Goreng">
+        value="{{ old('nama', $kategori->nama ?? '') }}" placeholder="Contoh: Nasi Goreng" autocomplete="off">
     @error('nama')
         <div class="invalid-feedback">{{ $message }}</div>
     @enderror

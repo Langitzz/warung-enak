@@ -6,7 +6,7 @@
 <div class="mb-3">
     <label for="nama" class="form-label">Nama Menu</label>
     <input type="text" id="nama" name="nama" class="form-control @error('nama') is-invalid @enderror"
-        value="{{ old('nama', $menu->nama ?? '') }}" placeholder="Contoh: Nasi Goreng Spesial">
+        value="{{ old('nama', $menu->nama ?? '') }}" placeholder="Contoh: Nasi Goreng Spesial" autocomplete="off">
     @error('nama')
         <div class="invalid-feedback">{{ $message }}</div>
     @enderror
@@ -46,7 +46,7 @@
 <div class="mb-3">
     <label for="deskripsi" class="form-label">Deskripsi <span class="text-muted">(boleh dikosongkan)</span></label>
     <textarea id="deskripsi" name="deskripsi" rows="3" class="form-control @error('deskripsi') is-invalid @enderror"
-        placeholder="Contoh: Nasi goreng dengan telur, ayam suwir, dan kerupuk">{{ old('deskripsi', $menu->deskripsi ?? '') }}</textarea>
+        placeholder="Contoh: Nasi goreng dengan telur, ayam suwir, dan kerupuk" autocomplete="off">{{ old('deskripsi', $menu->deskripsi ?? '') }}</textarea>
     @error('deskripsi')
         <div class="invalid-feedback">{{ $message }}</div>
     @enderror

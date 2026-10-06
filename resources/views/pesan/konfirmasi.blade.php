@@ -84,7 +84,7 @@
                     @if (in_array($pesanan->status, ['menunggu', 'diproses'], true))
                         <div class="text-center mt-3">
                             <form action="{{ route('pesanan.batalkan', $pesanan->kode) }}" method="POST"
-                                onsubmit="return confirm('Yakin mau membatalkan pesanan ini?')">
+                                data-confirm="Yakin mau membatalkan pesanan ini?" data-confirm-ya="Ya, Batalkan">
                                 @csrf
                                 <button type="submit" class="btn btn-outline-danger">
                                     <i class="bi bi-x-circle"></i> Batalkan Pesanan

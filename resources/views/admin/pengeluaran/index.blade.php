@@ -46,7 +46,7 @@
                                             <i class="mdi mdi-pencil"></i>
                                         </a>
                                         <form action="{{ route('admin.pengeluaran.destroy', $pengeluaran) }}"
-                                            method="POST" onsubmit="return confirm('Yakin mau menghapus pengeluaran ini?')">
+                                            method="POST" data-confirm="Yakin mau menghapus pengeluaran ini?" data-confirm-ya="Ya, Hapus">
                                             @csrf
                                             @method('DELETE')
                                             <button type="submit" class="btn btn-danger btn-sm" title="Hapus"

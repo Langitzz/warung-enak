@@ -195,7 +195,8 @@
                     @endphp
 
                     <div class="mb-2">
-                        <input type="text" class="form-control form-control-sm" id="cariMenu" placeholder="Cari menu...">
+                        <input type="text" class="form-control form-control-sm" id="cariMenu" placeholder="Cari menu..."
+                            autocomplete="off">
                     </div>
 
                     <div class="d-flex flex-wrap gap-1 mb-3" id="filterKategori">
@@ -272,50 +273,66 @@
                 <div class="card-body">
                     <h5 class="card-title mb-2">Metode Pembayaran</h5>
                     <div class="btn-group w-100 mb-2" role="group">
-                        <button type="button" class="btn btn-primary btn-sm" disabled>Cash</button>
-                        <button type="button" class="btn btn-outline-secondary btn-sm" disabled
-                            title="Segera hadir">Debit</button>
-                        <button type="button" class="btn btn-outline-secondary btn-sm" disabled
-                            title="Segera hadir">QRIS</button>
+                        <button type="button" class="btn btn-primary btn-sm tombol-metode" data-metode="tunai">Tunai</button>
+                        <button type="button" class="btn btn-outline-secondary btn-sm tombol-metode" data-metode="qris"
+                            @if (! $qris) disabled title="QRIS belum diupload di Pengaturan Sistem" @endif>QRIS</button>
                     </div>
 
-                    <label class="form-label mb-1 small">Uang Dibayar</label>
-                    <input type="text" class="form-control text-end mb-2" id="labelBayar" value="Rp0" readonly>
+                    <div id="areaTunai">
+                        <label class="form-label mb-1 small">Uang Dibayar</label>
+                        <input type="text" class="form-control text-end mb-2" id="labelBayar" value="Rp0" readonly>
 
-                    <div class="d-flex flex-wrap gap-1 mb-2" id="nominalCepat">
-                        <button type="button" class="btn btn-sm btn-outline-primary flex-fill" id="btnUangPas">Uang Pas</button>
-                        @foreach ([20000, 50000, 100000] as $nominal)
-                            <button type="button" class="btn btn-sm btn-outline-secondary flex-fill tombol-nominal"
-                                data-nominal="{{ $nominal }}">{{ number_format($nominal / 1000, 0, ',', '.') }}rb</button>
-                        @endforeach
-                    </div>
+                        <div class="d-flex flex-wrap gap-1 mb-2" id="nominalCepat">
+                            <button type="button" class="btn btn-sm btn-outline-primary flex-fill" id="btnUangPas">Uang
+                                Pas</button>
+                            @foreach ([20000, 50000, 100000] as $nominal)
+                                <button type="button" class="btn btn-sm btn-outline-secondary flex-fill tombol-nominal"
+                                    data-nominal="{{ $nominal }}">{{ number_format($nominal / 1000, 0, ',', '.') }}rb</button>
+                            @endforeach
+                        </div>
 
-                    <div class="row g-1 keypad-wrap">
-                        @foreach (['1', '2', '3', '4', '5', '6', '7', '8', '9'] as $angka)
+                        <div class="row g-1 keypad-wrap">
+                            @foreach (['1', '2', '3', '4', '5', '6', '7', '8', '9'] as $angka)
+                                <div class="col-4">
+                                    <button type="button" class="btn btn-outline-dark w-100 keypad-btn tombol-angka"
+                                        data-angka="{{ $angka }}">{{ $angka }}</button>
+                                </div>
+                            @endforeach
+                            <div class="col-4">
+                                <button type="button" class="btn btn-outline-secondary w-100 keypad-btn"
+                                    id="btnHapusAngka">
+                                    <i class="mdi mdi-backspace-outline"></i>
+                                </button>
+                            </div>
                             <div class="col-4">
                                 <button type="button" class="btn btn-outline-dark w-100 keypad-btn tombol-angka"
-                                    data-angka="{{ $angka }}">{{ $angka }}</button>
+                                    data-angka="0">0</button>
                             </div>
-                        @endforeach
-                        <div class="col-4">
-                            <button type="button" class="btn btn-outline-secondary w-100 keypad-btn" id="btnHapusAngka">
-                                <i class="mdi mdi-backspace-outline"></i>
-                            </button>
+                            <div class="col-4">
+                                <button type="button" class="btn btn-outline-secondary w-100 keypad-btn"
+                                    id="btnClearAngka">C</button>
+                            </div>
                         </div>
-                        <div class="col-4">
-                            <button type="button" class="btn btn-outline-dark w-100 keypad-btn tombol-angka"
-                                data-angka="0">0</button>
-                        </div>
-                        <div class="col-4">
-                            <button type="button" class="btn btn-outline-secondary w-100 keypad-btn"
-                                id="btnClearAngka">C</button>
+
+                        <hr class="my-2">
+                        <div class="d-flex justify-content-between mb-2">
+                            <span class="fw-semibold">Kembalian</span>
+                            <span class="fw-bold" id="labelKembalian">Rp0</span>
                         </div>
                     </div>
 
-                    <hr class="my-2">
-                    <div class="d-flex justify-content-between mb-2">
-                        <span class="fw-semibold">Kembalian</span>
-                        <span class="fw-bold" id="labelKembalian">Rp0</span>
+                    <div id="areaQris" class="d-none text-center mb-3">
+                        @if ($qris)
+                            <img src="{{ asset('storage/' . $qris) }}" alt="QRIS" class="img-fluid mb-2"
+                                style="max-width: 200px;">
+                        @endif
+                        <p class="text-muted small mb-0">Minta pelanggan pindai QRIS di atas.</p>
+                    </div>
+
+                    <div id="areaDebit" class="d-none text-center mb-3">
+                        <i class="mdi mdi-credit-card-outline" style="font-size: 48px; opacity: .5;"></i>
+                        <p class="text-muted small mb-0">Proses pembayaran lewat mesin EDC, lalu konfirmasi di
+                            bawah.</p>
                     </div>
 
                     <button type="button" class="btn btn-warning w-100 mb-2" id="btnTahan" disabled>
@@ -353,12 +370,16 @@
                         <tbody id="strukItems"></tbody>
                     </table>
                     <hr>
-                    <div class="d-flex justify-content-between"><span>Subtotal</span><span id="strukSubtotal"></span></div>
+                    <div class="d-flex justify-content-between"><span>Subtotal</span><span id="strukSubtotal"></span>
+                    </div>
                     <div class="d-flex justify-content-between"><span>Pajak</span><span id="strukPajak"></span></div>
-                    <div class="d-flex justify-content-between"><span>Biaya Layanan</span><span id="strukBiayaLayanan"></span></div>
+                    <div class="d-flex justify-content-between"><span>Biaya Layanan</span><span
+                            id="strukBiayaLayanan"></span></div>
                     <div class="d-flex justify-content-between fw-bold border-top pt-1 mt-1"><span>Total</span><span id="strukTotal"></span></div>
-                    <div class="d-flex justify-content-between mt-2"><span>Bayar</span><span id="strukBayar"></span></div>
-                    <div class="d-flex justify-content-between"><span>Kembalian</span><span id="strukKembalian"></span></div>
+                    <div class="d-flex justify-content-between mt-2"><span>Metode</span><span id="strukMetode"></span></div>
+                    <div class="d-flex justify-content-between"><span>Bayar</span><span id="strukBayar"></span></div>
+                    <div class="d-flex justify-content-between"><span>Kembalian</span><span id="strukKembalian"></span>
+                    </div>
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-outline-secondary" id="btnCetakStruk">
@@ -380,7 +401,8 @@
                 </div>
                 <div class="modal-body">
                     <label for="namaTahan" class="form-label">Nama Pelanggan / No. Meja</label>
-                    <input type="text" class="form-control" id="namaTahan" placeholder="Contoh: Meja 5, atau nama pelanggan">
+                    <input type="text" class="form-control" id="namaTahan"
+                        placeholder="Contoh: Meja 5, atau nama pelanggan" autocomplete="off">
                     <div class="text-danger small mt-1 d-none" id="errorTahan"></div>
                 </div>
                 <div class="modal-footer">
@@ -397,6 +419,8 @@
         (function() {
             const pesanan = {};
             let uangBayar = 0;
+            let metodeBayar = 'tunai';
+            const labelMetode = { tunai: 'Tunai', debit: 'Debit', qris: 'QRIS' };
             const csrfToken = document.querySelector('meta[name="csrf-token"]').content;
             const modalStruk = new bootstrap.Modal(document.getElementById('modalStruk'));
             const modalTahan = new bootstrap.Modal(document.getElementById('modalTahan'));
@@ -416,23 +440,59 @@
                 document.getElementById('strukPajak').textContent = formatRupiah(data.pajak);
                 document.getElementById('strukBiayaLayanan').textContent = formatRupiah(data.biaya_layanan);
                 document.getElementById('strukTotal').textContent = formatRupiah(data.total);
+                document.getElementById('strukMetode').textContent = labelMetode[data.metode_bayar] || data.metode_bayar;
                 document.getElementById('strukBayar').textContent = formatRupiah(uangDibayar);
                 document.getElementById('strukKembalian').textContent = formatRupiah(uangDibayar - data.total);
 
                 modalStruk.show();
             }
 
+            function pilihMetode(metode) {
+                metodeBayar = metode;
+
+                document.querySelectorAll('.tombol-metode').forEach(function (btn) {
+                    const aktif = btn.dataset.metode === metode;
+                    btn.classList.toggle('btn-primary', aktif);
+                    btn.classList.toggle('btn-outline-secondary', !aktif);
+                });
+
+                document.getElementById('areaTunai').classList.toggle('d-none', metode !== 'tunai');
+                document.getElementById('areaQris').classList.toggle('d-none', metode !== 'qris');
+                document.getElementById('areaDebit').classList.toggle('d-none', metode !== 'debit');
+
+                const labelTombolBayar = {
+                    tunai: '<i class="mdi mdi-cash-register"></i> Proses Bayar',
+                    debit: '<i class="mdi mdi-credit-card-outline"></i> Konfirmasi Sudah Dibayar (Kartu)',
+                    qris: '<i class="mdi mdi-qrcode"></i> Konfirmasi Sudah Dibayar (QRIS)',
+                };
+                document.getElementById('btnBayar').innerHTML = labelTombolBayar[metode];
+
+                if (metode === 'tunai') {
+                    uangBayar = 0;
+                    document.getElementById('labelBayar').value = formatRupiah(0);
+                }
+
+                hitungKembalian();
+            }
+
+            document.querySelectorAll('.tombol-metode').forEach(function (btn) {
+                btn.addEventListener('click', function () {
+                    if (btn.disabled) return;
+                    pilihMetode(btn.dataset.metode);
+                });
+            });
+
             document.getElementById('btnCetakStruk').addEventListener('click', function () {
                 window.print();
             });
 
-            document.getElementById('btnTahan').addEventListener('click', function () {
+            document.getElementById('btnTahan').addEventListener('click', function() {
                 document.getElementById('namaTahan').value = '';
                 document.getElementById('errorTahan').classList.add('d-none');
                 modalTahan.show();
             });
 
-            document.getElementById('btnSimpanTahan').addEventListener('click', function () {
+            document.getElementById('btnSimpanTahan').addEventListener('click', function() {
                 const namaPelanggan = document.getElementById('namaTahan').value.trim();
                 const errorEl = document.getElementById('errorTahan');
 
@@ -459,7 +519,10 @@
                             'X-CSRF-TOKEN': csrfToken,
                             'Accept': 'application/json',
                         },
-                        body: JSON.stringify({ nama_pelanggan: namaPelanggan, items }),
+                        body: JSON.stringify({
+                            nama_pelanggan: namaPelanggan,
+                            items
+                        }),
                     })
                     .then(async (res) => {
                         const data = await res.json();
@@ -468,7 +531,8 @@
                     })
                     .then((data) => {
                         modalTahan.hide();
-                        alert('Pesanan ' + data.kode + ' ditahan. Bisa diselesaikan lewat halaman Pesanan Tertahan.');
+                        alert('Pesanan ' + data.kode +
+                            ' ditahan. Bisa diselesaikan lewat halaman Pesanan Tertahan.');
                         Object.keys(pesanan).forEach((id) => delete pesanan[id]);
                         renderPesanan();
                     })
@@ -552,6 +616,12 @@
 
             function hitungKembalian() {
                 const total = hitungTotal();
+
+                // Debit/QRIS dianggap selalu dibayar pas (nggak ada uang kembali)
+                if (metodeBayar !== 'tunai') {
+                    uangBayar = total;
+                }
+
                 const kembalian = uangBayar - total;
                 const label = document.getElementById('labelKembalian');
                 label.textContent = formatRupiah(kembalian < 0 ? 0 : kembalian);
@@ -617,14 +687,14 @@
             }
 
             // Tombol nominal cepat: "Uang Pas" (samakan dengan total) dan pecahan umum (ditambahkan, bukan menimpa)
-            document.getElementById('btnUangPas').addEventListener('click', function () {
+            document.getElementById('btnUangPas').addEventListener('click', function() {
                 uangBayar = hitungTotal();
                 document.getElementById('labelBayar').value = formatRupiah(uangBayar);
                 hitungKembalian();
             });
 
-            document.querySelectorAll('.tombol-nominal').forEach(function (btn) {
-                btn.addEventListener('click', function () {
+            document.querySelectorAll('.tombol-nominal').forEach(function(btn) {
+                btn.addEventListener('click', function() {
                     uangBayar += Number(btn.dataset.nominal);
                     document.getElementById('labelBayar').value = formatRupiah(uangBayar);
                     hitungKembalian();
@@ -683,7 +753,8 @@
                             'Accept': 'application/json',
                         },
                         body: JSON.stringify({
-                            items
+                            items,
+                            metode_bayar: metodeBayar,
                         }),
                     })
                     .then(async (res) => {
@@ -696,6 +767,7 @@
                         Object.keys(pesanan).forEach((id) => delete pesanan[id]);
                         uangBayar = 0;
                         document.getElementById('labelBayar').value = formatRupiah(0);
+                        pilihMetode('tunai');
                         renderPesanan();
                     })
                     .catch((err) => {

@@ -30,6 +30,8 @@
     <script src="{{ asset('admin/assets/js/hoverable-collapse.js') }}"></script>
     <!-- endinject -->
 
+    <x-modal-konfirmasi />
+
     @stack('scripts')
 </body>
 

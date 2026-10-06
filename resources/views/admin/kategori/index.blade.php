@@ -26,7 +26,7 @@
             <form action="{{ route('admin.kategori.index') }}" method="GET" class="row g-2 mb-4">
                 <div class="col-md-6">
                     <input type="text" name="cari" value="{{ request('cari') }}" class="form-control"
-                        placeholder="Cari nama kategori...">
+                        placeholder="Cari nama kategori..." autocomplete="off">
                 </div>
                 <div class="col-md-4">
                     <select name="status" class="form-select">
@@ -83,7 +83,7 @@
 
                                         {{-- Hapus harus lewat form dengan method DELETE, bukan link biasa --}}
                                         <form action="{{ route('admin.kategori.destroy', $kategori) }}" method="POST"
-                                            onsubmit="return confirm('Yakin mau menghapus kategori ini?')">
+                                            data-confirm="Yakin mau menghapus kategori ini?" data-confirm-ya="Ya, Hapus">
                                             @csrf
                                             @method('DELETE')
 

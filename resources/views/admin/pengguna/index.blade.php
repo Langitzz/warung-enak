@@ -103,7 +103,7 @@
 
                                         {{-- Hapus harus lewat form dengan method DELETE, bukan link biasa --}}
                                         <form action="{{ route('admin.pengguna.destroy', $pengguna) }}" method="POST"
-                                            onsubmit="return confirm('Yakin mau menghapus pengguna ini?')">
+                                            data-confirm="Yakin mau menghapus pengguna ini?" data-confirm-ya="Ya, Hapus">
                                             @csrf
                                             @method('DELETE')
 

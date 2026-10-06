@@ -25,8 +25,8 @@
             {{-- ================= Cari & filter ================= --}}
             <form action="{{ route('admin.menu.index') }}" method="GET" class="row g-2 mb-4">
                 <div class="col-md-5">
-                    <input type="text" name="cari" value="{{ request('cari') }}" class="form-control"
-                        placeholder="Cari nama menu...">
+                <input type="text" name="cari" value="{{ request('cari') }}" class="form-control"
+                    placeholder="Cari nama menu..." autocomplete="off">
                 </div>
                 <div class="col-md-3">
                     <select name="kategori" class="form-select">
@@ -110,7 +110,7 @@
 
                                         {{-- Hapus harus lewat form dengan method DELETE, bukan link biasa --}}
                                         <form action="{{ route('admin.menu.destroy', $menu) }}" method="POST"
-                                            onsubmit="return confirm('Yakin mau menghapus menu ini?')">
+                                            data-confirm="Yakin mau menghapus menu ini?" data-confirm-ya="Ya, Hapus">
                                             @csrf
                                             @method('DELETE')
                                             <button type="submit" class="btn btn-danger btn-sm" title="Hapus"

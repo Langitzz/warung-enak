@@ -39,6 +39,7 @@ class PengaturanController extends Controller
                 'jam_tutup' => ['nullable', 'date_format:H:i'],
                 'deskripsi' => ['nullable', 'string', 'max:500'],
                 'logo' => ['nullable', 'image', 'mimes:jpg,jpeg,png,webp', 'max:2048'],
+                'qris' => ['nullable', 'image', 'mimes:jpg,jpeg,png,webp', 'max:2048'],
                 'tahun_berdiri' => ['nullable', 'integer', 'min:1900', 'max:' . now()->year],
             ],
             [
@@ -51,6 +52,9 @@ class PengaturanController extends Controller
                 'logo.image' => 'Logo harus berupa gambar.',
                 'logo.mimes' => 'Logo harus berformat jpg, jpeg, png, atau webp.',
                 'logo.max' => 'Ukuran logo maksimal 2 MB.',
+                'qris.image' => 'QRIS harus berupa gambar.',
+                'qris.mimes' => 'QRIS harus berformat jpg, jpeg, png, atau webp.',
+                'qris.max' => 'Ukuran QRIS maksimal 2 MB.',
                 'tahun_berdiri.integer' => 'Tahun berdiri harus berupa angka.',
                 'tahun_berdiri.min' => 'Tahun berdiri minimal 1900.',
                 'tahun_berdiri.max' => 'Tahun berdiri tidak boleh melebihi tahun ini.',
@@ -74,6 +78,20 @@ class PengaturanController extends Controller
         } else {
             // Tidak ada perubahan pada logo: jangan sentuh logo yang sudah tersimpan
             unset($data['logo']);
+        }
+
+        if ($request->hasFile('qris')) {
+            if ($pengaturan->qris) {
+                Storage::disk('public')->delete($pengaturan->qris);
+            }
+            $data['qris'] = $request->file('qris')->store('qris', 'public');
+        } elseif ($request->boolean('hapus_qris')) {
+            if ($pengaturan->qris) {
+                Storage::disk('public')->delete($pengaturan->qris);
+            }
+            $data['qris'] = null;
+        } else {
+            unset($data['qris']);
         }
 
         $pengaturan->update($data);

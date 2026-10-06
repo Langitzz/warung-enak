@@ -91,6 +91,8 @@
     <!-- Main JS File -->
     <script src="{{ asset('user/assets/js/main.js') }}"></script>
 
+    <x-modal-konfirmasi />
+
     @stack('scripts')
 
 </body>

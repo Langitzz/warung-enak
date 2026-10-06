@@ -14,7 +14,8 @@
     <label for="keterangan" class="form-label">Keterangan</label>
     <input type="text" id="keterangan" name="keterangan"
         class="form-control @error('keterangan') is-invalid @enderror"
-        value="{{ old('keterangan', $pengeluaran->keterangan ?? '') }}" placeholder="Contoh: Beli beras 10kg">
+        value="{{ old('keterangan', $pengeluaran->keterangan ?? '') }}" placeholder="Contoh: Beli beras 10kg"
+        autocomplete="off">
     @error('keterangan')
         <div class="invalid-feedback">{{ $message }}</div>
     @enderror
