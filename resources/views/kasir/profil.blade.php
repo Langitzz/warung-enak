@@ -49,7 +49,8 @@
                 <div class="card-body">
                     <h4 class="card-title mb-4">Informasi Profil</h4>
 
-                    <form action="{{ route('profil.update') }}" method="POST" enctype="multipart/form-data">
+                    <form action="{{ route('profil.update') }}" method="POST" enctype="multipart/form-data"
+                        id="formInfoProfil">
                         @csrf
                         @method('PATCH')
 
@@ -117,7 +118,7 @@
                         </div>
 
                         <div class="text-end">
-                            <button type="submit" class="btn btn-primary">
+                            <button type="submit" class="btn btn-primary" id="tombolSimpanProfil">
                                 <i class="mdi mdi-content-save"></i> Simpan Perubahan
                             </button>
                         </div>
@@ -137,3 +138,25 @@
     </div>
 
 @endsection
+
+@push('scripts')
+    <script>
+        (function() {
+            const form = document.getElementById('formInfoProfil');
+            const tombol = document.getElementById('tombolSimpanProfil');
+            const teksAsli = tombol.innerHTML;
+
+            form.addEventListener('submit', function() {
+                tombol.disabled = true;
+                tombol.innerHTML = '<span class="spinner-border spinner-border-sm me-2"></span>Menyimpan...';
+            });
+
+            window.addEventListener('pageshow', function(e) {
+                if (e.persisted) {
+                    tombol.disabled = false;
+                    tombol.innerHTML = teksAsli;
+                }
+            });
+        })();
+    </script>
+@endpush

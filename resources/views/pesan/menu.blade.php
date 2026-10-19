@@ -58,7 +58,8 @@
                                         <li>{{ Str::limit($menu->deskripsi, 60) }}</li>
                                     @endif
                                 </ul>
-                                <form action="{{ route('keranjang.tambah', $menu) }}" method="POST">
+                                <form action="{{ route('keranjang.tambah', $menu) }}" method="POST"
+                                    class="form-tambah-keranjang">
                                     @csrf
                                     <button type="submit" class="buy-btn border-0">
                                         <i class="bi bi-cart-plus"></i> Tambah ke Keranjang
@@ -71,5 +72,7 @@
             @endif
         </div>
     </section>
+
+    @include('partials.toast-keranjang')
 
 @endsection

@@ -19,6 +19,35 @@
             <h4 class="card-title mb-1">Monitoring Pesanan</h4>
             <p class="text-muted mb-4">Pantau seluruh pesanan (tampilan lihat saja).</p>
 
+            {{-- ================= Cari & filter ================= --}}
+            <form action="{{ route('supervisor.pesanan.index') }}" method="GET" class="row g-2 mb-4">
+                <div class="col-md-6">
+                    <input type="text" name="cari" value="{{ request('cari') }}" class="form-control"
+                        placeholder="Cari nama pelanggan / nomor WhatsApp..." autocomplete="off">
+                </div>
+                <div class="col-md-3">
+                    <select name="status" class="form-select">
+                        <option value="">Semua Status</option>
+                        @foreach (\App\Models\Pesanan::STATUS as $kode => $label)
+                            <option value="{{ $kode }}" {{ request('status') === $kode ? 'selected' : '' }}>
+                                {{ $label }}
+                            </option>
+                        @endforeach
+                    </select>
+                </div>
+                <div class="col-md-3 d-flex gap-2">
+                    <button type="submit" class="btn btn-primary flex-fill">
+                        <i class="mdi mdi-magnify"></i> Cari
+                    </button>
+                    @if (request('cari') || request('status'))
+                        <a href="{{ route('supervisor.pesanan.index') }}" class="btn btn-outline-secondary"
+                            title="Reset filter">
+                            <i class="mdi mdi-close"></i>
+                        </a>
+                    @endif
+                </div>
+            </form>
+
             <div class="table-responsive">
                 <table class="table table-hover align-middle">
                     <thead class="table-light">

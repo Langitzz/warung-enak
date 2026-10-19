@@ -46,6 +46,32 @@
                             @enderror
                         </div>
 
+                        {{-- Instagram --}}
+                        <div class="mb-3">
+                            <label for="instagram" class="form-label">Link Instagram <span
+                                    class="text-muted">(boleh dikosongkan)</span></label>
+                            <input type="url" id="instagram" name="instagram"
+                                class="form-control @error('instagram') is-invalid @enderror"
+                                value="{{ old('instagram', $pengaturan->instagram) }}"
+                                placeholder="Contoh: https://instagram.com/namawarung" autocomplete="off">
+                            @error('instagram')
+                                <div class="invalid-feedback">{{ $message }}</div>
+                            @enderror
+                        </div>
+
+                        {{-- Facebook --}}
+                        <div class="mb-3">
+                            <label for="facebook" class="form-label">Link Facebook <span
+                                    class="text-muted">(boleh dikosongkan)</span></label>
+                            <input type="url" id="facebook" name="facebook"
+                                class="form-control @error('facebook') is-invalid @enderror"
+                                value="{{ old('facebook', $pengaturan->facebook) }}"
+                                placeholder="Contoh: https://facebook.com/namawarung" autocomplete="off">
+                            @error('facebook')
+                                <div class="invalid-feedback">{{ $message }}</div>
+                            @enderror
+                        </div>
+
                         {{-- Alamat --}}
                         <div class="mb-3">
                             <label for="alamat" class="form-label">Alamat <span class="text-muted">(boleh

@@ -23,7 +23,7 @@
 
             <div class="row gy-4">
                 <div class="col-lg-7">
-                    <form action="{{ route('checkout.store') }}" method="POST">
+                    <form action="{{ route('checkout.store') }}" method="POST" id="formCheckout">
                         @csrf
                         <div class="mb-3">
                             <label class="form-label">Nama</label>
@@ -41,7 +41,7 @@
                             <label class="form-label">Catatan (opsional)</label>
                             <textarea name="catatan" class="form-control" rows="3">{{ old('catatan') }}</textarea>
                         </div>
-                        <button type="submit" class="btn-get-started border-0 w-100">
+                        <button type="submit" class="btn-get-started border-0 w-100" id="tombolBuatPesanan">
                             Buat Pesanan
                         </button>
                     </form>
@@ -87,4 +87,25 @@
         </div>
     </section>
 
+    @push('scripts')
+        <script>
+            (function() {
+                const form = document.getElementById('formCheckout');
+                const tombol = document.getElementById('tombolBuatPesanan');
+                const teksAsli = tombol.innerHTML;
+
+                form.addEventListener('submit', function() {
+                    tombol.disabled = true;
+                    tombol.innerHTML = '<span class="spinner-border spinner-border-sm me-2"></span>Memproses...';
+                });
+
+                window.addEventListener('pageshow', function(e) {
+                    if (e.persisted) {
+                        tombol.disabled = false;
+                        tombol.innerHTML = teksAsli;
+                    }
+                });
+            })();
+        </script>
+    @endpush
 @endsection

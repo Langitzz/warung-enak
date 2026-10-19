@@ -66,6 +66,8 @@ Route::prefix('kasir')
             ->name('tertahan');
         Route::patch('/tertahan/{pesanan}/selesaikan', [KasirController::class, 'selesaikan'])
             ->name('selesaikan');
+        Route::patch('/pesanan/{pesanan}/batalkan', [KasirController::class, 'batalkan'])
+            ->name('batalkan');
     });
 
 // ================= CHEF =================
@@ -181,14 +183,8 @@ Route::prefix('admin')
     ->group(function () {
         Route::resource('menu', MenuController::class)
             ->except('show');
-
-        // ---------------------------------------------------------------
-        // ROUTE PENGGANTI: halamannya belum dibuat, cuma menampilkan admin/segera.
-        // BELUM ADA BACKEND: hapus/ganti route ini kalau fitur aslinya sudah dikerjakan.
-        // ---------------------------------------------------------------
         Route::resource('kategori', KategoriController::class)
             ->except('show');
-
         Route::resource('pengeluaran', PengeluaranController::class)
             ->except('show');
 

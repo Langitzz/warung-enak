@@ -50,6 +50,34 @@
                 </div>
             </div>
 
+            {{-- ================= Cari & filter ================= --}}
+            <form action="{{ route('admin.pesanan.index') }}" method="GET" class="row g-2 mb-4">
+                <div class="col-md-6">
+                    <input type="text" name="cari" value="{{ request('cari') }}" class="form-control"
+                        placeholder="Cari nama pelanggan / nomor WhatsApp..." autocomplete="off">
+                </div>
+                <div class="col-md-3">
+                    <select name="status" class="form-select">
+                        <option value="">Semua Status</option>
+                        @foreach ($statusList as $kode => $label)
+                            <option value="{{ $kode }}" {{ request('status') === $kode ? 'selected' : '' }}>
+                                {{ $label }}
+                            </option>
+                        @endforeach
+                    </select>
+                </div>
+                <div class="col-md-3 d-flex gap-2">
+                    <button type="submit" class="btn btn-primary flex-fill">
+                        <i class="mdi mdi-magnify"></i> Cari
+                    </button>
+                    @if (request('cari') || request('status'))
+                        <a href="{{ route('admin.pesanan.index') }}" class="btn btn-outline-secondary" title="Reset filter">
+                            <i class="mdi mdi-close"></i>
+                        </a>
+                    @endif
+                </div>
+            </form>
+
             <div class="table-responsive">
                 <table class="table table-hover align-middle">
                     <thead class="table-light">
@@ -67,7 +95,7 @@
                     <tbody>
                         @forelse ($pesanans as $pesanan)
                             <tr>
-                                <td>{{ $loop->iteration }}</td>
+                                <td>{{ $loop->iteration + ($pesanans->currentPage() - 1) * $pesanans->perPage() }}</td>
                                 <td class="fw-bold">{{ $pesanan->kode }}</td>
                                 <td>{{ $pesanan->created_at->locale('id')->translatedFormat('d M Y, H:i') }}</td>
                                 <td>
@@ -89,7 +117,8 @@
 
                                         {{-- Hapus harus lewat form dengan method DELETE, bukan link biasa --}}
                                         <form action="{{ route('admin.pesanan.destroy', $pesanan) }}" method="POST"
-                                            data-confirm="Yakin mau menghapus pesanan {{ $pesanan->kode }}?" data-confirm-ya="Ya, Hapus">
+                                            data-confirm="Yakin mau menghapus pesanan {{ $pesanan->kode }}?"
+                                            data-confirm-ya="Ya, Hapus">
                                             @csrf
                                             @method('DELETE')
 
@@ -120,6 +149,10 @@
                         @endforelse
                     </tbody>
                 </table>
+            </div>
+
+            <div class="mt-3">
+                {{ $pesanans->links('pagination::bootstrap-5') }}
             </div>
 
         </div>

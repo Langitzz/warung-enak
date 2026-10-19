@@ -40,6 +40,8 @@ class PengaturanController extends Controller
                 'deskripsi' => ['nullable', 'string', 'max:500'],
                 'logo' => ['nullable', 'image', 'mimes:jpg,jpeg,png,webp', 'max:2048'],
                 'qris' => ['nullable', 'image', 'mimes:jpg,jpeg,png,webp', 'max:2048'],
+                'instagram' => ['nullable', 'url', 'max:255'],
+                'facebook' => ['nullable', 'url', 'max:255'],
                 'tahun_berdiri' => ['nullable', 'integer', 'min:1900', 'max:' . now()->year],
             ],
             [
@@ -47,6 +49,8 @@ class PengaturanController extends Controller
                 'nama_warung.max' => 'Nama warung maksimal 100 karakter.',
                 'telepon.regex' => 'Nomor telepon hanya boleh berisi angka, spasi, dan tanda + - ( ).',
                 'telepon.max' => 'Nomor telepon maksimal 20 karakter.',
+                'instagram.url' => 'Link Instagram harus berupa URL yang valid (contoh: https://instagram.com/namawarung).',
+                'facebook.url' => 'Link Facebook harus berupa URL yang valid (contoh: https://facebook.com/namawarung).',
                 'jam_buka.date_format' => 'Format jam buka tidak valid.',
                 'jam_tutup.date_format' => 'Format jam tutup tidak valid.',
                 'logo.image' => 'Logo harus berupa gambar.',

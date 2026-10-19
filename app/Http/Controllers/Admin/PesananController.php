@@ -11,15 +11,24 @@ use Illuminate\Http\Request;
 class PesananController extends Controller
 {
     // Halaman daftar pesanan
-    public function index()
+    public function index(Request $request)
     {
         // jumlah_porsi = total semua porsi di tiap pesanan (dihitung database, satu query)
         $pesanans = Pesanan::withSum('items as jumlah_porsi', 'jumlah')
+            ->when($request->filled('cari'), function ($query) use ($request) {
+                $kataKunci = $request->input('cari');
+                $query->where(function ($query) use ($kataKunci) {
+                    $query->where('nama_pelanggan', 'like', "%{$kataKunci}%")
+                        ->orWhere('no_whatsapp', 'like', "%{$kataKunci}%");
+                });
+            })
+            ->when($request->filled('status'), fn ($query) => $query->where('status', $request->input('status')))
             ->latest()
             ->latest('id')
-            ->get();
+            ->paginate(20)
+            ->withQueryString();
 
-        // Jumlah pesanan per status untuk kartu ringkasan di atas tabel
+        // Jumlah pesanan per status untuk kartu ringkasan di atas tabel (total asli, tidak ikut kefilter cari/status)
         $hitungStatus = Pesanan::selectRaw('status, COUNT(*) as total')
             ->groupBy('status')
             ->pluck('total', 'status');
@@ -183,6 +192,11 @@ class PesananController extends Controller
                 ->get()
                 ->keyBy('periode');
 
+            $pengeluaranPerPeriode = Pengeluaran::selectRaw("DATE_FORMAT(tanggal, '%Y-%m') as periode, SUM(jumlah) as total")
+                ->whereBetween('tanggal', [$mulai->toDateString(), $selesai->toDateString()])
+                ->groupBy('periode')
+                ->pluck('total', 'periode');
+
             $penjualanPerPeriode = [];
             for ($i = 11; $i >= 0; $i--) {
                 $bulan = now('Asia/Jakarta')->subMonths($i);
@@ -193,6 +207,7 @@ class PesananController extends Controller
                     'label_singkat' => $bulan->locale('id')->translatedFormat('M Y'),
                     'pesanan' => $baris->jumlah_pesanan ?? 0,
                     'pendapatan' => (int) ($baris->pendapatan ?? 0),
+                    'pengeluaran' => (int) ($pengeluaranPerPeriode[$bulan->format('Y-m')] ?? 0),
                 ];
             }
         } else {
@@ -207,6 +222,11 @@ class PesananController extends Controller
                 ->get()
                 ->keyBy('periode');
 
+            $pengeluaranPerPeriode = Pengeluaran::selectRaw('tanggal as periode, SUM(jumlah) as total')
+                ->whereBetween('tanggal', [$mulai->toDateString(), $selesai->toDateString()])
+                ->groupBy('periode')
+                ->pluck('total', 'periode');
+
             $penjualanPerPeriode = [];
             for ($i = $jumlahHari; $i >= 0; $i--) {
                 $tanggal = now('Asia/Jakarta')->subDays($i);
@@ -219,6 +239,7 @@ class PesananController extends Controller
                         : $tanggal->locale('id')->translatedFormat('D d/m'),
                     'pesanan' => $baris->jumlah_pesanan ?? 0,
                     'pendapatan' => (int) ($baris->pendapatan ?? 0),
+                    'pengeluaran' => (int) ($pengeluaranPerPeriode[$tanggal->format('Y-m-d')] ?? 0),
                 ];
             }
         }

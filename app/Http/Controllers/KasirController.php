@@ -123,7 +123,26 @@ class KasirController extends Controller
             ->latest('id')
             ->get();
 
-        return view('kasir.tertahan', compact('pesanans'));
+        return view('kasir.tertahan', [
+            'pesanans' => $pesanans,
+            'qris' => \App\Models\Pengaturan::ambil()->qris,
+        ]);
+    }
+
+    // Batalkan pesanan yang ditahan (misal pelanggannya batal/nggak jadi bayar)
+    public function batalkan(Pesanan $pesanan)
+    {
+        if ($pesanan->sumber !== 'kasir') {
+            abort(404);
+        }
+
+        if (! $pesanan->bolehKe('dibatalkan')) {
+            return back()->with('error', 'Pesanan ini sudah tidak bisa dibatalkan.');
+        }
+
+        $pesanan->update(['status' => 'dibatalkan']);
+
+        return back()->with('success', 'Pesanan ' . $pesanan->kode . ' dibatalkan.');
     }
 
     // Selesaikan pembayaran pesanan yang ditahan (hanya boleh kalau statusnya sudah "siap")

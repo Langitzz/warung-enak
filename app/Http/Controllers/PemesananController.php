@@ -34,15 +34,25 @@ class PemesananController extends Controller
     }
 
     // Tambah 1 menu ke keranjang (disimpan di session, bukan database)
-    public function tambahKeranjang(Menu $menu)
+    public function tambahKeranjang(Request $request, Menu $menu)
     {
         if (! $menu->tersedia || ! optional($menu->kategori)->aktif) {
+            if ($request->wantsJson()) {
+                return response()->json(['message' => 'Menu ini sedang tidak tersedia.'], 422);
+            }
             return back()->with('error', 'Menu ini sedang tidak tersedia.');
         }
 
         $keranjang = session('keranjang', []);
         $keranjang[$menu->id] = ($keranjang[$menu->id] ?? 0) + 1;
         session(['keranjang' => $keranjang]);
+
+        if ($request->wantsJson()) {
+            return response()->json([
+                'message' => $menu->nama . ' ditambahkan ke keranjang.',
+                'jumlah_keranjang' => array_sum($keranjang),
+            ]);
+        }
 
         return back()->with('success', $menu->nama.' ditambahkan ke keranjang.');
     }
@@ -178,7 +188,7 @@ class PemesananController extends Controller
         ]);
     }
 
-    // Batalkan pesanan sendiri (cuma boleh selagi masih menunggu/diproses)
+    // Batalkan pesanan sendiri (boleh selagi belum selesai/dibatalkan — lihat Pesanan::ALUR)
     public function batalkan(string $kode)
     {
         $pesanan = $this->cariPesananLewatKode($kode);
@@ -285,15 +295,35 @@ class PemesananController extends Controller
             session(['keranjang' => $keranjang]);
         }
 
+        if ($request->wantsJson()) {
+            [, $total] = $this->rincianKeranjang($keranjang);
+
+            return response()->json([
+                'subtotal' => $menu->harga * $data['jumlah'],
+                'total' => $total,
+                'jumlah_keranjang' => array_sum($keranjang),
+            ]);
+        }
+
         return back();
     }
 
     // Hapus satu item dari keranjang
-    public function hapusKeranjang(Menu $menu)
+    public function hapusKeranjang(Request $request, Menu $menu)
     {
         $keranjang = session('keranjang', []);
         unset($keranjang[$menu->id]);
         session(['keranjang' => $keranjang]);
+
+        if ($request->wantsJson()) {
+            [, $total] = $this->rincianKeranjang($keranjang);
+
+            return response()->json([
+                'total' => $total,
+                'jumlah_keranjang' => array_sum($keranjang),
+                'kosong' => empty($keranjang),
+            ]);
+        }
 
         return back()->with('success', 'Menu dihapus dari keranjang.');
     }

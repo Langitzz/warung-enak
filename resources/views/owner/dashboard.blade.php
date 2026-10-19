@@ -13,34 +13,66 @@
         <div class="col-sm-6 col-xl-3 grid-margin stretch-card">
             <div class="card card-rounded">
                 <div class="card-body">
-                    <p class="text-muted mb-1">Pendapatan Hari Ini</p>
-                    <h3 class="fw-bold mb-0">Rp {{ number_format($pendapatanHariIni, 0, ',', '.') }}</h3>
+                    <div class="d-flex align-items-center justify-content-between">
+                        <div>
+                            <p class="text-muted mb-1">Pendapatan Hari Ini</p>
+                            <h3 class="fw-bold mb-0">Rp {{ number_format($pendapatanHariIni, 0, ',', '.') }}</h3>
+                        </div>
+                        <div class="rounded-circle bg-success text-white d-flex align-items-center justify-content-center"
+                            style="width: 48px; height: 48px;">
+                            <i class="mdi mdi-cash-multiple" style="font-size: 24px;"></i>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
         <div class="col-sm-6 col-xl-3 grid-margin stretch-card">
             <div class="card card-rounded">
                 <div class="card-body">
-                    <p class="text-muted mb-1">Pendapatan Bulan Ini</p>
-                    <h3 class="fw-bold mb-0">Rp {{ number_format($pendapatanBulanIni, 0, ',', '.') }}</h3>
+                    <div class="d-flex align-items-center justify-content-between">
+                        <div>
+                            <p class="text-muted mb-1">Pendapatan Bulan Ini</p>
+                            <h3 class="fw-bold mb-0">Rp {{ number_format($pendapatanBulanIni, 0, ',', '.') }}</h3>
+                        </div>
+                        <div class="rounded-circle bg-info text-white d-flex align-items-center justify-content-center"
+                            style="width: 48px; height: 48px;">
+                            <i class="mdi mdi-calendar-month-outline" style="font-size: 24px;"></i>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
         <div class="col-sm-6 col-xl-3 grid-margin stretch-card">
             <div class="card card-rounded">
                 <div class="card-body">
-                    <p class="text-muted mb-1">Total Transaksi</p>
-                    <h3 class="fw-bold mb-0">{{ $totalTransaksi }}</h3>
-                    <p class="small text-muted mb-0">Sepanjang waktu</p>
+                    <div class="d-flex align-items-center justify-content-between">
+                        <div>
+                            <p class="text-muted mb-1">Total Transaksi</p>
+                            <h3 class="fw-bold mb-0">{{ $totalTransaksi }}</h3>
+                            <p class="small text-muted mb-0">Sepanjang waktu</p>
+                        </div>
+                        <div class="rounded-circle bg-primary text-white d-flex align-items-center justify-content-center"
+                            style="width: 48px; height: 48px;">
+                            <i class="mdi mdi-receipt-text-outline" style="font-size: 24px;"></i>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
         <div class="col-sm-6 col-xl-3 grid-margin stretch-card">
             <div class="card card-rounded">
                 <div class="card-body">
-                    <p class="text-muted mb-1">Total Pesanan Selesai</p>
-                    <h3 class="fw-bold mb-0">{{ $totalSelesai }}</h3>
-                    <p class="small text-muted mb-0">Sepanjang waktu</p>
+                    <div class="d-flex align-items-center justify-content-between">
+                        <div>
+                            <p class="text-muted mb-1">Total Pesanan Selesai</p>
+                            <h3 class="fw-bold mb-0">{{ $totalSelesai }}</h3>
+                            <p class="small text-muted mb-0">Sepanjang waktu</p>
+                        </div>
+                        <div class="rounded-circle bg-warning text-white d-flex align-items-center justify-content-center"
+                            style="width: 48px; height: 48px;">
+                            <i class="mdi mdi-check-circle-outline" style="font-size: 24px;"></i>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
@@ -50,7 +82,7 @@
         <div class="col-lg-8 grid-margin stretch-card">
             <div class="card card-rounded">
                 <div class="card-body">
-                    <h4 class="card-title mb-3">Pendapatan 7 Hari Terakhir</h4>
+                    <h4 class="card-title mb-3">Pendapatan &amp; Pengeluaran 7 Hari Terakhir</h4>
                     <div style="position: relative; height: 280px;">
                         <canvas id="grafikOwner"></canvas>
                     </div>
@@ -85,16 +117,30 @@
             data: {
                 labels: @json($grafikLabels),
                 datasets: [{
-                    label: 'Pendapatan',
-                    data: @json($grafikData),
-                    backgroundColor: '#4d55c4',
-                    borderRadius: 6,
-                }],
+                        label: 'Pendapatan',
+                        data: @json($grafikData),
+                        backgroundColor: '#4d55c4',
+                        borderRadius: 6,
+                    },
+                    {
+                        label: 'Pengeluaran',
+                        data: @json($grafikPengeluaran),
+                        backgroundColor: '#e2434d',
+                        borderRadius: 6,
+                    },
+                ],
             },
             options: {
                 responsive: true,
                 maintainAspectRatio: false,
-                plugins: { legend: { display: false } },
+                plugins: {
+                    legend: { display: true },
+                    tooltip: {
+                        callbacks: {
+                            label: (item) => item.dataset.label + ': Rp ' + item.raw.toLocaleString('id-ID'),
+                        },
+                    },
+                },
                 scales: { y: { beginAtZero: true } },
             },
         });

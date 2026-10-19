@@ -1,3 +1,23 @@
+@push('styles')
+    <style>
+        @keyframes munculBadge {
+            from {
+                transform: scale(0);
+            }
+
+            to {
+                transform: scale(1);
+            }
+        }
+
+        @media (prefers-reduced-motion: reduce) {
+            .badge.rounded-pill.bg-danger {
+                animation: none !important;
+            }
+        }
+    </style>
+@endpush
+
 @php
     $namaWarung = \App\Models\Pengaturan::namaWarung();
     $jumlahKeranjang = array_sum(session('keranjang', []));
@@ -6,6 +26,13 @@
     $akun = auth()->user();
     $fotoAkun = $akun && $akun->foto ? asset('storage/' . $akun->foto) : null;
     $hurufAkun = $akun ? strtoupper(mb_substr($akun->name, 0, 1)) : '';
+
+    // Highlight menu aktif buat link yang ngarah ke HALAMAN LAIN (bukan section di landing page).
+    // Scrollspy bawaan template cuma jalan buat link berhash (#tentang, #kontak, dst), jadi
+    // "Menu" dan "Cek Pesanan" perlu ditandai manual dari sisi server di sini.
+    $diBeranda = request()->is('/');
+    $diMenu = request()->routeIs('menu.index', 'keranjang.*', 'checkout.*');
+    $diCekPesanan = request()->routeIs('pesanan.cek', 'pesanan.cek.proses');
 @endphp
 
 <header id="header" class="header d-flex align-items-center fixed-top">
@@ -17,25 +44,26 @@
 
         <nav id="navmenu" class="navmenu">
             <ul>
-                <li><a href="{{ url('/') }}">Beranda</a></li>
+                <li><a href="{{ url('/') }}" class="{{ $diBeranda ? 'active' : '' }}">Beranda</a></li>
                 <li><a href="{{ url('/') }}#about">Tentang</a></li>
-                <li><a href="{{ route('menu.index') }}">Menu</a></li>
+                <li><a href="{{ route('menu.index') }}" class="{{ $diMenu ? 'active' : '' }}">Menu</a></li>
                 <li><a href="{{ url('/') }}#cara-pesan">Cara Pesan</a></li>
-                <li><a href="{{ route('pesanan.cek') }}">Cek Pesanan</a></li>
+                <li><a href="{{ route('pesanan.cek') }}" class="{{ $diCekPesanan ? 'active' : '' }}">Cek Pesanan</a>
+                </li>
                 <li><a href="{{ url('/') }}#contact">Kontak</a></li>
             </ul>
             <i class="mobile-nav-toggle d-xl-none bi bi-list"></i>
         </nav>
 
         <a href="{{ route('keranjang.index') }}" class="position-relative d-inline-flex align-items-center me-3"
-            style="color: var(--nav-color);">
+            style="color: var(--nav-color); transition: transform .15s ease;"
+            onmouseover="this.style.transform='scale(1.1)'" onmouseout="this.style.transform='scale(1)'">
             <i class="bi bi-cart3 fs-5"></i>
-            @if ($jumlahKeranjang > 0)
-                <span class="badge rounded-pill bg-danger position-absolute"
-                    style="top: -8px; right: -10px; font-size: 0.65rem;">
-                    {{ $jumlahKeranjang }}
-                </span>
-            @endif
+            <span id="badgeKeranjang"
+                class="badge rounded-pill bg-danger position-absolute {{ $jumlahKeranjang > 0 ? '' : 'd-none' }}"
+                style="top: -8px; right: -10px; font-size: 0.65rem; animation: munculBadge .25s ease;">
+                {{ $jumlahKeranjang }}
+            </span>
         </a>
 
         @auth

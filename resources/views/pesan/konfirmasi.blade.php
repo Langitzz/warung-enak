@@ -81,7 +81,7 @@
                         </div>
                     </div>
 
-                    @if (in_array($pesanan->status, ['menunggu', 'diproses'], true))
+                    @if (in_array($pesanan->status, ['menunggu', 'diproses', 'siap'], true))
                         <div class="text-center mt-3">
                             <form action="{{ route('pesanan.batalkan', $pesanan->kode) }}" method="POST"
                                 data-confirm="Yakin mau membatalkan pesanan ini?" data-confirm-ya="Ya, Batalkan">

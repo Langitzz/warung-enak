@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Owner;
 
 use App\Http\Controllers\Controller;
+use App\Models\Pengeluaran;
 use App\Models\Pesanan;
 use App\Models\PesananItem;
 
@@ -31,24 +32,31 @@ class DashboardController extends Controller
             ->with('menu')
             ->get();
 
-        // Grafik pendapatan 7 hari terakhir
+        // Grafik pendapatan & pengeluaran 7 hari terakhir
         $mulaiGrafik = now('Asia/Jakarta')->subDays(6)->startOfDay();
         $dataPerHari = Pesanan::selectRaw('DATE(created_at) as tanggal, SUM(total) as pendapatan')
             ->where('status', 'selesai')
             ->whereBetween('created_at', [$mulaiGrafik, now('Asia/Jakarta')->endOfDay()])
             ->groupBy('tanggal')->get()->keyBy('tanggal');
 
+        $pengeluaranPerHari = Pengeluaran::selectRaw('tanggal, SUM(jumlah) as total')
+            ->whereBetween('tanggal', [$mulaiGrafik->toDateString(), now('Asia/Jakarta')->toDateString()])
+            ->groupBy('tanggal')
+            ->pluck('total', 'tanggal');
+
         $grafikLabels = [];
         $grafikData = [];
+        $grafikPengeluaran = [];
         for ($i = 6; $i >= 0; $i--) {
             $tgl = now('Asia/Jakarta')->subDays($i);
             $grafikLabels[] = $tgl->locale('id')->translatedFormat('D');
             $grafikData[] = (int) ($dataPerHari->get($tgl->format('Y-m-d'))->pendapatan ?? 0);
+            $grafikPengeluaran[] = (int) ($pengeluaranPerHari->get($tgl->format('Y-m-d')) ?? 0);
         }
 
         return view('owner.dashboard', compact(
             'pendapatanHariIni', 'pendapatanBulanIni', 'totalTransaksi', 'totalSelesai',
-            'menuTerlaris', 'grafikLabels', 'grafikData'
+            'menuTerlaris', 'grafikLabels', 'grafikData', 'grafikPengeluaran'
         ));
     }
 }

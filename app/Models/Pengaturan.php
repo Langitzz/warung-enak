@@ -16,6 +16,8 @@ class Pengaturan extends Model
         'deskripsi',
         'logo',
         'qris',
+        'instagram',
+        'facebook',
         'tahun_berdiri',
 
         // Pengaturan sistem

@@ -83,6 +83,8 @@
         @yield('content')
     </div>
 
+    <x-modal-konfirmasi />
+
     <script src="{{ asset('admin/assets/vendors/js/vendor.bundle.base.js') }}"></script>
 
     @stack('scripts')

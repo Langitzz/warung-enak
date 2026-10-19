@@ -17,7 +17,7 @@ class Pesanan extends Model
     protected static function booted(): void
     {
         static::created(function (self $pesanan) {
-            if ($pesanan->status === 'selesai') {
+            if ($pesanan->sumber === 'kasir') {
                 $sumber = 'transaksi Kasir';
             } elseif ($pesanan->user_id) {
                 $sumber = 'pelanggan terdaftar (' . $pesanan->nama_pelanggan . ')';
@@ -62,6 +62,7 @@ class Pesanan extends Model
         'no_whatsapp',
         'catatan',
         'status',
+        'metode_bayar',
         'subtotal',
         'pajak',
         'biaya_layanan',

@@ -19,7 +19,6 @@
         </li>
 
         {{-- ========== Kelola Data ========== --}}
-        {{-- Data Menu sudah punya fitur. Kategori dan Pesanan masih halaman pengganti (admin/segera) --}}
         <li class="nav-item {{ $kelolaDataAktif ? 'active' : '' }}">
             <a class="nav-link" data-bs-toggle="collapse" href="#menu-kelola-data"
                 aria-expanded="{{ $kelolaDataAktif ? 'true' : 'false' }}" aria-controls="menu-kelola-data">
@@ -50,7 +49,6 @@
         </li>
 
         {{-- ========== Laporan ========== --}}
-        {{-- Masih halaman pengganti (admin/segera) --}}
         <li class="nav-item {{ $laporanAktif ? 'active' : '' }}">
             <a class="nav-link" data-bs-toggle="collapse" href="#menu-laporan"
                 aria-expanded="{{ $laporanAktif ? 'true' : 'false' }}" aria-controls="menu-laporan">
@@ -73,7 +71,6 @@
         </li>
 
         {{-- ========== Pengguna ========== --}}
-        {{-- Masih halaman pengganti (admin/segera). Fitur aslinya butuh sistem login dan role dulu --}}
         <li class="nav-item {{ $penggunaAktif ? 'active' : '' }}">
             <a class="nav-link" data-bs-toggle="collapse" href="#menu-pengguna"
                 aria-expanded="{{ $penggunaAktif ? 'true' : 'false' }}" aria-controls="menu-pengguna">
@@ -96,7 +93,6 @@
         </li>
 
         {{-- ========== Pengaturan ========== --}}
-        {{-- Masih halaman pengganti (admin/segera) --}}
         <li class="nav-item {{ $pengaturanAktif ? 'active' : '' }}">
             <a class="nav-link" data-bs-toggle="collapse" href="#menu-pengaturan"
                 aria-expanded="{{ $pengaturanAktif ? 'true' : 'false' }}" aria-controls="menu-pengaturan">

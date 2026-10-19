@@ -25,24 +25,48 @@
         <div class="col-md-4 grid-margin stretch-card">
             <div class="card card-rounded">
                 <div class="card-body">
-                    <p class="text-muted mb-1">Total Pendapatan</p>
-                    <h3 class="fw-bold mb-0">Rp {{ number_format($totalPendapatan, 0, ',', '.') }}</h3>
+                    <div class="d-flex align-items-center justify-content-between">
+                        <div>
+                            <p class="text-muted mb-1">Total Pendapatan</p>
+                            <h3 class="fw-bold mb-0">Rp {{ number_format($totalPendapatan, 0, ',', '.') }}</h3>
+                        </div>
+                        <div class="rounded-circle bg-success text-white d-flex align-items-center justify-content-center"
+                            style="width: 48px; height: 48px;">
+                            <i class="mdi mdi-cash-multiple" style="font-size: 24px;"></i>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
         <div class="col-md-4 grid-margin stretch-card">
             <div class="card card-rounded">
                 <div class="card-body">
-                    <p class="text-muted mb-1">Total Pesanan</p>
-                    <h3 class="fw-bold mb-0">{{ $totalPesanan }} pesanan</h3>
+                    <div class="d-flex align-items-center justify-content-between">
+                        <div>
+                            <p class="text-muted mb-1">Total Pesanan</p>
+                            <h3 class="fw-bold mb-0">{{ $totalPesanan }} pesanan</h3>
+                        </div>
+                        <div class="rounded-circle bg-info text-white d-flex align-items-center justify-content-center"
+                            style="width: 48px; height: 48px;">
+                            <i class="mdi mdi-clipboard-list-outline" style="font-size: 24px;"></i>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
         <div class="col-md-4 grid-margin stretch-card">
             <div class="card card-rounded">
                 <div class="card-body">
-                    <p class="text-muted mb-1">Rata-rata per Pesanan</p>
-                    <h3 class="fw-bold mb-0">Rp {{ number_format($rataRata, 0, ',', '.') }}</h3>
+                    <div class="d-flex align-items-center justify-content-between">
+                        <div>
+                            <p class="text-muted mb-1">Rata-rata per Pesanan</p>
+                            <h3 class="fw-bold mb-0">Rp {{ number_format($rataRata, 0, ',', '.') }}</h3>
+                        </div>
+                        <div class="rounded-circle bg-primary text-white d-flex align-items-center justify-content-center"
+                            style="width: 48px; height: 48px;">
+                            <i class="mdi mdi-calculator-variant-outline" style="font-size: 24px;"></i>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
@@ -53,20 +77,36 @@
         <div class="col-md-6 grid-margin stretch-card">
             <div class="card card-rounded">
                 <div class="card-body">
-                    <p class="text-muted mb-1">Total Pengeluaran</p>
-                    <h3 class="fw-bold mb-0">Rp {{ number_format($totalPengeluaran, 0, ',', '.') }}</h3>
-                    <a href="{{ route('admin.pengeluaran.index') }}" class="small">Kelola Pengeluaran &rarr;</a>
+                    <div class="d-flex align-items-center justify-content-between">
+                        <div>
+                            <p class="text-muted mb-1">Total Pengeluaran</p>
+                            <h3 class="fw-bold mb-0">Rp {{ number_format($totalPengeluaran, 0, ',', '.') }}</h3>
+                            <a href="{{ route('admin.pengeluaran.index') }}" class="small">Kelola Pengeluaran &rarr;</a>
+                        </div>
+                        <div class="rounded-circle bg-danger text-white d-flex align-items-center justify-content-center"
+                            style="width: 48px; height: 48px;">
+                            <i class="mdi mdi-cash-minus" style="font-size: 24px;"></i>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
         <div class="col-md-6 grid-margin stretch-card">
             <div class="card card-rounded">
                 <div class="card-body">
-                    <p class="text-muted mb-1">Laba Bersih</p>
-                    <h3 class="fw-bold mb-0 {{ $labaBersih >= 0 ? 'text-success' : 'text-danger' }}">
-                        Rp {{ number_format($labaBersih, 0, ',', '.') }}
-                    </h3>
-                    <p class="small text-muted mb-0">Pendapatan &minus; Pengeluaran, 7 hari terakhir</p>
+                    <div class="d-flex align-items-center justify-content-between">
+                        <div>
+                            <p class="text-muted mb-1">Laba Bersih</p>
+                            <h3 class="fw-bold mb-0 {{ $labaBersih >= 0 ? 'text-success' : 'text-danger' }}">
+                                Rp {{ number_format($labaBersih, 0, ',', '.') }}
+                            </h3>
+                            <p class="small text-muted mb-0">Pendapatan &minus; Pengeluaran, 7 hari terakhir</p>
+                        </div>
+                        <div class="rounded-circle bg-primary text-white d-flex align-items-center justify-content-center"
+                            style="width: 48px; height: 48px;">
+                            <i class="mdi mdi-finance" style="font-size: 24px;"></i>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
@@ -77,7 +117,8 @@
         <div class="col-12 grid-margin stretch-card">
             <div class="card card-rounded">
                 <div class="card-body">
-                    <h4 class="card-title mb-3">Pendapatan per {{ $rentang === 'tahun' ? 'Bulan' : 'Hari' }}</h4>
+                    <h4 class="card-title mb-3">Pendapatan &amp; Pengeluaran per
+                        {{ $rentang === 'tahun' ? 'Bulan' : 'Hari' }}</h4>
                     <div style="position: relative; height: 300px;">
                         <canvas id="grafikLaporan"></canvas>
                     </div>
@@ -98,6 +139,7 @@
                             <th>{{ $rentang === 'tahun' ? 'Bulan' : 'Tanggal' }}</th>
                             <th>Jumlah Pesanan</th>
                             <th>Pendapatan</th>
+                            <th>Pengeluaran</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -107,9 +149,12 @@
                                 <td>{{ $periode['label_panjang'] }}</td>
                                 <td>{{ $periode['pesanan'] }}</td>
                                 <td>Rp {{ number_format($periode['pendapatan'], 0, ',', '.') }}</td>
+                                <td>Rp {{ number_format($periode['pengeluaran'], 0, ',', '.') }}</td>
                             </tr>
                         @endforeach
                     </tbody>
+                </table>
+            </div>
         </div>
     </div>
 
@@ -120,31 +165,41 @@
     <script src="{{ asset('admin/assets/vendors/chart.js/chart.umd.js') }}"></script>
     <script>
         const labels = @json(collect($penjualanPerPeriode)->pluck('label_singkat'));
-        const data = @json(collect($penjualanPerPeriode)->pluck('pendapatan'));
+        const dataPendapatan = @json(collect($penjualanPerPeriode)->pluck('pendapatan'));
+        const dataPengeluaran = @json(collect($penjualanPerPeriode)->pluck('pengeluaran'));
 
         new Chart(document.getElementById('grafikLaporan'), {
             type: 'line',
             data: {
                 labels: labels,
                 datasets: [{
-                    label: 'Pendapatan',
-                    data: data,
-                    borderColor: '#1F3BB3',
-                    backgroundColor: 'rgba(31, 59, 179, 0.1)',
-                    fill: true,
-                    tension: 0.3,
-                }],
+                        label: 'Pendapatan',
+                        data: dataPendapatan,
+                        borderColor: '#1F3BB3',
+                        backgroundColor: 'rgba(31, 59, 179, 0.1)',
+                        fill: true,
+                        tension: 0.3,
+                    },
+                    {
+                        label: 'Pengeluaran',
+                        data: dataPengeluaran,
+                        borderColor: '#e2434d',
+                        backgroundColor: 'rgba(226, 67, 77, 0.1)',
+                        fill: true,
+                        tension: 0.3,
+                    },
+                ],
             },
             options: {
                 responsive: true,
                 maintainAspectRatio: false,
                 plugins: {
                     legend: {
-                        display: false
+                        display: true
                     },
                     tooltip: {
                         callbacks: {
-                            label: (item) => 'Rp ' + item.raw.toLocaleString('id-ID'),
+                            label: (item) => item.dataset.label + ': Rp ' + item.raw.toLocaleString('id-ID'),
                         },
                     },
                 },

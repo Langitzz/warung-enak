@@ -56,13 +56,6 @@ class PenggunaController extends Controller
     // Halaman form edit pengguna
     public function edit(User $pengguna)
     {
-        // Akun Zii tidak boleh diedit.
-        if ($pengguna->name === 'Zii') {
-            return redirect()
-                ->route('admin.pengguna.index')
-                ->with('error', 'Akun Zii tidak dapat diedit.');
-        }
-
         $roles = self::ROLE;
 
         return view('admin.pengguna.edit', compact('pengguna', 'roles'));
@@ -70,14 +63,7 @@ class PenggunaController extends Controller
 
     // Simpan perubahan pengguna
     public function update(Request $request, User $pengguna)
-    {
-        // Akun Zii tidak boleh diedit.
-        if ($pengguna->name === 'Zii') {
-            return redirect()
-                ->route('admin.pengguna.index')
-                ->with('error', 'Akun Zii tidak dapat diedit.');
-        }
-
+    {   
         // Pengaman: admin tidak boleh mengubah role atau menonaktifkan akunnya sendiri.
         // Nilainya dipaksa tetap di sisi server, walau form dimanipulasi.
         if ($pengguna->is($request->user())) {
@@ -96,6 +82,12 @@ class PenggunaController extends Controller
             unset($data['password']);
         }
 
+        // Pengaman sisi server: akun pelanggan tidak boleh di-reset password-nya oleh
+        // admin lewat sini, walau form-nya dimanipulasi untuk tetap mengirim password.
+        if ($data['role'] === 'pelanggan') {
+            unset($data['password']);
+        }
+
         $pengguna->update($data);
 
         return redirect()
@@ -106,13 +98,6 @@ class PenggunaController extends Controller
     // Hapus pengguna
     public function destroy(Request $request, User $pengguna)
     {
-        // Akun Zii tidak boleh dihapus.
-        if ($pengguna->name === 'Zii') {
-            return redirect()
-                ->route('admin.pengguna.index')
-                ->with('error', 'Akun Zii tidak dapat dihapus.');
-        }
-
         // Pengaman: admin tidak boleh menghapus akunnya sendiri
         if ($pengguna->is($request->user())) {
             return redirect()

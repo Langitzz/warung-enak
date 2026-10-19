@@ -2,6 +2,8 @@
 @section('title', 'Pesanan Tertahan')
 
 @section('content')
+    @include('partials.admin-alert')
+
     <div class="d-flex align-items-center justify-content-between mb-3">
         <h4 class="fw-bold mb-0">Pesanan Tertahan</h4>
         <a href="{{ route('kasir.index') }}" class="btn btn-outline-secondary btn-sm">
@@ -44,16 +46,28 @@
                                 <td class="text-end">Rp{{ number_format($pesanan->total, 0, ',', '.') }}</td>
                                 <td>{{ $pesanan->created_at->locale('id')->translatedFormat('d M, H:i') }}</td>
                                 <td class="text-center">
-                                    @if ($pesanan->status === 'siap')
-                                        <button type="button" class="btn btn-success btn-sm tombol-bayar"
-                                            data-id="{{ $pesanan->id }}"
-                                            data-kode="{{ $pesanan->kode }}"
-                                            data-total="{{ $pesanan->total }}">
-                                            <i class="mdi mdi-cash-register"></i> Bayar
-                                        </button>
-                                    @else
-                                        <span class="text-muted small">Menunggu dapur</span>
-                                    @endif
+                                    <div class="d-flex gap-1 justify-content-center align-items-center">
+                                        @if ($pesanan->status === 'siap')
+                                            <button type="button" class="btn btn-success btn-sm tombol-bayar"
+                                                data-id="{{ $pesanan->id }}"
+                                                data-kode="{{ $pesanan->kode }}"
+                                                data-total="{{ $pesanan->total }}">
+                                                <i class="mdi mdi-cash-register"></i> Bayar
+                                            </button>
+                                        @else
+                                            <span class="text-muted small">Menunggu dapur</span>
+                                        @endif
+
+                                        <form action="{{ route('kasir.batalkan', $pesanan) }}" method="POST"
+                                            data-confirm="Yakin mau membatalkan pesanan {{ $pesanan->kode }}? Pesanan yang sudah dibatalkan tidak bisa diproses lagi."
+                                            data-confirm-ya="Ya, Batalkan">
+                                            @csrf
+                                            @method('PATCH')
+                                            <button type="submit" class="btn btn-outline-danger btn-sm" title="Batalkan pesanan">
+                                                <i class="mdi mdi-close"></i>
+                                            </button>
+                                        </form>
+                                    </div>
                                 </td>
                             </tr>
                         @empty
@@ -81,20 +95,38 @@
                         <span class="fw-bold fs-5" id="bayarTotal"></span>
                     </div>
 
-                    <label for="inputUangBayar" class="form-label">Uang Dibayar</label>
-                    <input type="number" class="form-control mb-2" id="inputUangBayar" placeholder="0" min="0">
-
-                    <div class="d-flex flex-wrap gap-1 mb-3">
-                        <button type="button" class="btn btn-sm btn-outline-primary flex-fill" id="btnBayarUangPas">Uang Pas</button>
-                        @foreach ([20000, 50000, 100000] as $nominal)
-                            <button type="button" class="btn btn-sm btn-outline-secondary flex-fill tombol-nominal-tertahan"
-                                data-nominal="{{ $nominal }}">{{ number_format($nominal / 1000, 0, ',', '.') }}rb</button>
-                        @endforeach
+                    <div class="btn-group w-100 mb-3" role="group">
+                        <button type="button" class="btn btn-primary btn-sm tombol-metode-tertahan"
+                            data-metode="tunai">Tunai</button>
+                        <button type="button" class="btn btn-outline-secondary btn-sm tombol-metode-tertahan"
+                            data-metode="qris"
+                            @if (! $qris) disabled title="QRIS belum diupload di Pengaturan Sistem" @endif>QRIS</button>
                     </div>
 
-                    <div class="d-flex justify-content-between">
-                        <span class="fw-semibold">Kembalian</span>
-                        <span class="fw-bold" id="bayarKembalian">Rp0</span>
+                    <div id="areaTunaiTertahan">
+                        <label for="inputUangBayar" class="form-label">Uang Dibayar</label>
+                        <input type="number" class="form-control mb-2" id="inputUangBayar" placeholder="0" min="0">
+
+                        <div class="d-flex flex-wrap gap-1 mb-3">
+                            <button type="button" class="btn btn-sm btn-outline-primary flex-fill" id="btnBayarUangPas">Uang Pas</button>
+                            @foreach ([20000, 50000, 100000] as $nominal)
+                                <button type="button" class="btn btn-sm btn-outline-secondary flex-fill tombol-nominal-tertahan"
+                                    data-nominal="{{ $nominal }}">{{ number_format($nominal / 1000, 0, ',', '.') }}rb</button>
+                            @endforeach
+                        </div>
+
+                        <div class="d-flex justify-content-between">
+                            <span class="fw-semibold">Kembalian</span>
+                            <span class="fw-bold" id="bayarKembalian">Rp0</span>
+                        </div>
+                    </div>
+
+                    <div id="areaQrisTertahan" class="d-none text-center mb-3">
+                        @if ($qris)
+                            <img src="{{ asset('storage/' . $qris) }}" alt="QRIS" class="img-fluid mb-2"
+                                style="max-width: 180px;">
+                        @endif
+                        <p class="text-muted small mb-0">Minta pelanggan pindai QRIS di atas.</p>
                     </div>
 
                     <div class="text-danger small mt-2 d-none" id="bayarError"></div>
@@ -135,7 +167,8 @@
                     <div class="d-flex justify-content-between"><span>Pajak</span><span id="strukPajak"></span></div>
                     <div class="d-flex justify-content-between"><span>Biaya Layanan</span><span id="strukBiayaLayanan"></span></div>
                     <div class="d-flex justify-content-between fw-bold border-top pt-1 mt-1"><span>Total</span><span id="strukTotal"></span></div>
-                    <div class="d-flex justify-content-between mt-2"><span>Bayar</span><span id="strukBayar"></span></div>
+                    <div class="d-flex justify-content-between mt-2"><span>Metode</span><span id="strukMetodeTertahan"></span></div>
+                    <div class="d-flex justify-content-between"><span>Bayar</span><span id="strukBayar"></span></div>
                     <div class="d-flex justify-content-between"><span>Kembalian</span><span id="strukKembalian"></span></div>
                 </div>
                 <div class="modal-footer">
@@ -183,6 +216,33 @@
 
             let pesananIdAktif = null;
             let totalAktif = 0;
+            let metodeBayarTertahan = 'tunai';
+            const labelMetodeTertahan = { tunai: 'Tunai', qris: 'QRIS' };
+
+            function pilihMetodeTertahan(metode) {
+                metodeBayarTertahan = metode;
+
+                document.querySelectorAll('.tombol-metode-tertahan').forEach(function (btn) {
+                    const aktif = btn.dataset.metode === metode;
+                    btn.classList.toggle('btn-primary', aktif);
+                    btn.classList.toggle('btn-outline-secondary', !aktif);
+                });
+
+                document.getElementById('areaTunaiTertahan').classList.toggle('d-none', metode !== 'tunai');
+                document.getElementById('areaQrisTertahan').classList.toggle('d-none', metode !== 'qris');
+
+                if (metode === 'qris') {
+                    document.getElementById('inputUangBayar').value = totalAktif;
+                }
+                hitungKembalianTertahan();
+            }
+
+            document.querySelectorAll('.tombol-metode-tertahan').forEach(function (btn) {
+                btn.addEventListener('click', function () {
+                    if (btn.disabled) return;
+                    pilihMetodeTertahan(btn.dataset.metode);
+                });
+            });
 
             function hitungKembalianTertahan() {
                 const bayar = Number(document.getElementById('inputUangBayar').value || 0);
@@ -200,6 +260,7 @@
                     document.getElementById('inputUangBayar').value = '';
                     document.getElementById('bayarKembalian').textContent = 'Rp0';
                     document.getElementById('bayarError').classList.add('d-none');
+                    pilihMetodeTertahan('tunai');
 
                     modalBayar.show();
                 });
@@ -235,6 +296,7 @@
                 document.getElementById('strukPajak').textContent = formatRupiah(data.pajak);
                 document.getElementById('strukBiayaLayanan').textContent = formatRupiah(data.biaya_layanan);
                 document.getElementById('strukTotal').textContent = formatRupiah(data.total);
+                document.getElementById('strukMetodeTertahan').textContent = labelMetodeTertahan[data.metode_bayar] || data.metode_bayar;
                 document.getElementById('strukBayar').textContent = formatRupiah(uangDibayar);
                 document.getElementById('strukKembalian').textContent = formatRupiah(uangDibayar - data.total);
 
@@ -257,6 +319,8 @@
 
                 const tombol = this;
                 tombol.disabled = true;
+                const teksAsli = tombol.innerHTML;
+                tombol.innerHTML = '<span class="spinner-border spinner-border-sm me-1"></span> Memproses...';
 
                 fetch(urlSelesaikanTemplate.replace('GANTI_ID', pesananIdAktif), {
                         method: 'PATCH',
@@ -265,7 +329,7 @@
                             'X-CSRF-TOKEN': csrfToken,
                             'Accept': 'application/json',
                         },
-                        body: JSON.stringify({ uang_dibayar: uangBayar }),
+                    body: JSON.stringify({ uang_dibayar: uangBayar, metode_bayar: metodeBayarTertahan }),
                     })
                     .then(async (res) => {
                         const data = await res.json();
@@ -282,6 +346,7 @@
                     })
                     .finally(() => {
                         tombol.disabled = false;
+                        tombol.innerHTML = teksAsli;
                     });
             });
         })();

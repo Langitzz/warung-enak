@@ -7,6 +7,9 @@
     $edit = isset($pengguna);
     // Admin yang mengedit akunnya sendiri: role dan status dikunci (server juga memaksanya tetap)
     $akunSendiri = $edit && $pengguna->is(auth()->user());
+    // Password akun pelanggan tidak boleh diubah lewat sini — itu urusan pelanggan sendiri
+    // lewat halaman Profil mereka, bukan sesuatu yang admin bisa reset diam-diam.
+    $editingPelanggan = $edit && $pengguna->role === 'pelanggan';
 @endphp
 
 <div class="row">
@@ -67,21 +70,29 @@
 
 </div>
 
-<div class="row">
-
-    {{-- Password (dengan tombol mata) --}}
-    <div class="col-md-6">
-        <x-input-password name="password" label="Password" autocomplete="new-password" :hint="$edit
-            ? 'Kosongkan kalau tidak ingin mengubah password. Kalau diisi, minimal 8 karakter.'
-            : 'Minimal 8 karakter.'" />
+@if ($editingPelanggan)
+    <div class="alert alert-info">
+        <i class="mdi mdi-information-outline"></i>
+        Ini akun pelanggan. Password-nya tidak bisa diubah dari sini — pelanggan mengatur password-nya
+        sendiri lewat halaman Profil mereka.
     </div>
+@else
+    <div class="row">
 
-    {{-- Konfirmasi password --}}
-    <div class="col-md-6">
-        <x-input-password name="password_confirmation" label="Konfirmasi Password" autocomplete="new-password" />
+        {{-- Password (dengan tombol mata) --}}
+        <div class="col-md-6">
+            <x-input-password name="password" label="Password" autocomplete="new-password" :hint="$edit
+                ? 'Kosongkan kalau tidak ingin mengubah password. Kalau diisi, minimal 8 karakter.'
+                : 'Minimal 8 karakter.'" />
+        </div>
+
+        {{-- Konfirmasi password --}}
+        <div class="col-md-6">
+            <x-input-password name="password_confirmation" label="Konfirmasi Password" autocomplete="new-password" />
+        </div>
+
     </div>
-
-</div>
+@endif
 
 {{-- Status aktif --}}
 <div class="mb-4">

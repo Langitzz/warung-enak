@@ -45,6 +45,13 @@
             align-content: flex-start;
         }
 
+        /* Kolom kanan scroll sendiri (independen dari kolom kiri) kalau kontennya
+           lebih tinggi dari layar -- bukan maksa Kartu Pesanan jadi kecil banget */
+        .kolom-kanan {
+            height: 100%;
+            overflow-y: auto;
+        }
+
         .kartu-pesanan .card-body {
             padding: 0.85rem 1rem;
         }
@@ -76,10 +83,6 @@
                 max-height: none;
             }
 
-            .kartu-pesanan {
-                flex: 0 0 auto;
-            }
-
             .kartu-pesanan .table-responsive {
                 overflow-y: visible;
             }
@@ -106,7 +109,12 @@
             color: #fff;
         }
 
+        .tombol-metode {
+            transition: background-color .15s ease, color .15s ease, border-color .15s ease;
+        }
+
         .produk-btn {
+            position: relative;
             appearance: none;
             -webkit-appearance: none;
             background: #fff;
@@ -118,6 +126,70 @@
             gap: 0.75rem;
             box-shadow: 0 1px 2px rgba(0, 0, 0, 0.04);
             transition: transform .15s ease, box-shadow .15s ease, border-color .15s ease;
+        }
+
+        .produk-btn.diklik {
+            animation: mantulProduk .3s ease;
+        }
+
+        @keyframes mantulProduk {
+            0% {
+                transform: scale(1);
+            }
+
+            40% {
+                transform: scale(0.94);
+            }
+
+            100% {
+                transform: scale(1);
+            }
+        }
+
+        .total-berubah {
+            display: inline-block;
+            animation: kedipTotal .3s ease;
+        }
+
+        @keyframes kedipTotal {
+            0% {
+                transform: scale(1);
+            }
+
+            40% {
+                transform: scale(1.15);
+            }
+
+            100% {
+                transform: scale(1);
+            }
+        }
+
+        .tombol-kategori {
+            transition: transform .15s ease, box-shadow .15s ease;
+        }
+
+        .tombol-kategori.btn-primary {
+            box-shadow: 0 2px 6px rgba(var(--bs-primary-rgb), .4);
+            transform: translateY(-1px);
+        }
+
+        .badge-qty {
+            position: absolute;
+            top: -8px;
+            right: -8px;
+            min-width: 22px;
+            height: 22px;
+            border-radius: 11px;
+            background: #4d55c4;
+            color: #fff;
+            font-size: 0.72rem;
+            font-weight: 700;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 0 5px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, .15);
         }
 
         .produk-btn:hover {
@@ -214,6 +286,7 @@
                                 <button type="button" class="produk-btn w-100 d-flex align-items-center"
                                     data-id="{{ $menu->id }}" data-nama="{{ $menu->nama }}"
                                     data-harga="{{ (int) $menu->harga }}" data-kategori="{{ $menu->kategori->nama ?? '' }}">
+                                    <span class="badge-qty d-none" data-badge-produk="{{ $menu->id }}">0</span>
                                     @if ($menu->foto)
                                         <img src="{{ asset('storage/' . $menu->foto) }}" alt="{{ $menu->nama }}"
                                             class="produk-foto">
@@ -234,6 +307,9 @@
                             </div>
                         @endforelse
                     </div>
+                    <p class="text-muted text-center mb-0 mt-3 d-none" id="pesanMenuTidakKetemu">
+                        Menu tidak ditemukan.
+                    </p>
                 </div>
             </div>
         </div>
@@ -243,7 +319,10 @@
 
             <div class="card mb-2 kartu-pesanan">
                 <div class="card-body">
-                    <h5 class="card-title mb-2">Menu Dipesan</h5>
+                    <h5 class="card-title mb-2 d-flex align-items-center gap-2">
+                        Menu Dipesan
+                        <span class="badge rounded-pill bg-primary" id="badgeJumlahPesanan">0</span>
+                    </h5>
                     <div class="table-responsive">
                         <table class="table table-sm table-hover mb-0">
                             <thead>
@@ -256,7 +335,11 @@
                             </thead>
                             <tbody id="daftarPesanan">
                                 <tr id="pesananKosong">
-                                    <td colspan="4" class="text-center text-muted">Belum ada menu dipesan</td>
+                                    <td colspan="4" class="text-center text-muted py-4">
+                                        <i class="mdi mdi-cart-outline" style="font-size: 2rem; opacity: .4;"></i>
+                                        <div class="mt-1">Keranjang masih kosong</div>
+                                        <div class="small">Klik menu di sebelah kiri buat mulai</div>
+                                    </td>
                                 </tr>
                             </tbody>
                         </table>
@@ -273,9 +356,10 @@
                 <div class="card-body">
                     <h5 class="card-title mb-2">Metode Pembayaran</h5>
                     <div class="btn-group w-100 mb-2" role="group">
-                        <button type="button" class="btn btn-primary btn-sm tombol-metode" data-metode="tunai">Tunai</button>
+                        <button type="button" class="btn btn-primary btn-sm tombol-metode"
+                            data-metode="tunai">Tunai</button>
                         <button type="button" class="btn btn-outline-secondary btn-sm tombol-metode" data-metode="qris"
-                            @if (! $qris) disabled title="QRIS belum diupload di Pengaturan Sistem" @endif>QRIS</button>
+                            @if (!$qris) disabled title="QRIS belum diupload di Pengaturan Sistem" @endif>QRIS</button>
                     </div>
 
                     <div id="areaTunai">
@@ -316,7 +400,7 @@
 
                         <hr class="my-2">
                         <div class="d-flex justify-content-between mb-2">
-                            <span class="fw-semibold">Kembalian</span>
+                            <span class="fw-semibold" id="labelKembalianTeks">Kembalian</span>
                             <span class="fw-bold" id="labelKembalian">Rp0</span>
                         </div>
                     </div>
@@ -375,8 +459,10 @@
                     <div class="d-flex justify-content-between"><span>Pajak</span><span id="strukPajak"></span></div>
                     <div class="d-flex justify-content-between"><span>Biaya Layanan</span><span
                             id="strukBiayaLayanan"></span></div>
-                    <div class="d-flex justify-content-between fw-bold border-top pt-1 mt-1"><span>Total</span><span id="strukTotal"></span></div>
-                    <div class="d-flex justify-content-between mt-2"><span>Metode</span><span id="strukMetode"></span></div>
+                    <div class="d-flex justify-content-between fw-bold border-top pt-1 mt-1"><span>Total</span><span
+                            id="strukTotal"></span></div>
+                    <div class="d-flex justify-content-between mt-2"><span>Metode</span><span id="strukMetode"></span>
+                    </div>
                     <div class="d-flex justify-content-between"><span>Bayar</span><span id="strukBayar"></span></div>
                     <div class="d-flex justify-content-between"><span>Kembalian</span><span id="strukKembalian"></span>
                     </div>
@@ -385,8 +471,18 @@
                     <button type="button" class="btn btn-outline-secondary" id="btnCetakStruk">
                         <i class="mdi mdi-printer"></i> Cetak
                     </button>
-                    <button type="button" class="btn btn-primary" data-bs-dismiss="modal">Pesanan Baru</button>
+                    <button type="button" class="btn btn-primary" data-bs-dismiss="modal">Tutup</button>
                 </div>
+            </div>
+        </div>
+    </div>
+
+    {{-- Toast notifikasi kecil, pengganti alert() bawaan browser --}}
+    <div class="toast-container position-fixed bottom-0 end-0 p-3" style="z-index: 1080;">
+        <div id="toastNotif" class="toast align-items-center text-white border-0" role="alert">
+            <div class="d-flex">
+                <div class="toast-body" id="toastPesan"></div>
+                <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast"></button>
             </div>
         </div>
     </div>
@@ -419,9 +515,26 @@
         (function() {
             const pesanan = {};
             let uangBayar = 0;
+            let totalSebelumnya = 0;
             let metodeBayar = 'tunai';
-            const labelMetode = { tunai: 'Tunai', debit: 'Debit', qris: 'QRIS' };
+            const labelMetode = {
+                tunai: 'Tunai',
+                debit: 'Debit',
+                qris: 'QRIS'
+            };
             const csrfToken = document.querySelector('meta[name="csrf-token"]').content;
+
+            const elToast = document.getElementById('toastNotif');
+            const toastBootstrap = new bootstrap.Toast(elToast, {
+                delay: 4000
+            });
+
+            function tampilkanToast(pesan, jenis) {
+                elToast.classList.remove('bg-success', 'bg-danger');
+                elToast.classList.add(jenis === 'error' ? 'bg-danger' : 'bg-success');
+                document.getElementById('toastPesan').textContent = pesan;
+                toastBootstrap.show();
+            }
             const modalStruk = new bootstrap.Modal(document.getElementById('modalStruk'));
             const modalTahan = new bootstrap.Modal(document.getElementById('modalTahan'));
 
@@ -440,7 +553,8 @@
                 document.getElementById('strukPajak').textContent = formatRupiah(data.pajak);
                 document.getElementById('strukBiayaLayanan').textContent = formatRupiah(data.biaya_layanan);
                 document.getElementById('strukTotal').textContent = formatRupiah(data.total);
-                document.getElementById('strukMetode').textContent = labelMetode[data.metode_bayar] || data.metode_bayar;
+                document.getElementById('strukMetode').textContent = labelMetode[data.metode_bayar] || data
+                    .metode_bayar;
                 document.getElementById('strukBayar').textContent = formatRupiah(uangDibayar);
                 document.getElementById('strukKembalian').textContent = formatRupiah(uangDibayar - data.total);
 
@@ -450,7 +564,7 @@
             function pilihMetode(metode) {
                 metodeBayar = metode;
 
-                document.querySelectorAll('.tombol-metode').forEach(function (btn) {
+                document.querySelectorAll('.tombol-metode').forEach(function(btn) {
                     const aktif = btn.dataset.metode === metode;
                     btn.classList.toggle('btn-primary', aktif);
                     btn.classList.toggle('btn-outline-secondary', !aktif);
@@ -475,14 +589,14 @@
                 hitungKembalian();
             }
 
-            document.querySelectorAll('.tombol-metode').forEach(function (btn) {
-                btn.addEventListener('click', function () {
+            document.querySelectorAll('.tombol-metode').forEach(function(btn) {
+                btn.addEventListener('click', function() {
                     if (btn.disabled) return;
                     pilihMetode(btn.dataset.metode);
                 });
             });
 
-            document.getElementById('btnCetakStruk').addEventListener('click', function () {
+            document.getElementById('btnCetakStruk').addEventListener('click', function() {
                 window.print();
             });
 
@@ -490,6 +604,20 @@
                 document.getElementById('namaTahan').value = '';
                 document.getElementById('errorTahan').classList.add('d-none');
                 modalTahan.show();
+            });
+
+            // Autofocus kolom nama begitu modal selesai muncul (bukan pas .show() dipanggil,
+            // biar nggak ketabrak animasi transisi modal yang belum selesai)
+            document.getElementById('modalTahan').addEventListener('shown.bs.modal', function() {
+                document.getElementById('namaTahan').focus();
+            });
+
+            // Enter di kolom nama langsung Simpan, nggak perlu klik tombol
+            document.getElementById('namaTahan').addEventListener('keydown', function(e) {
+                if (e.key === 'Enter') {
+                    e.preventDefault();
+                    document.getElementById('btnSimpanTahan').click();
+                }
             });
 
             document.getElementById('btnSimpanTahan').addEventListener('click', function() {
@@ -531,8 +659,8 @@
                     })
                     .then((data) => {
                         modalTahan.hide();
-                        alert('Pesanan ' + data.kode +
-                            ' ditahan. Bisa diselesaikan lewat halaman Pesanan Tertahan.');
+                        tampilkanToast('Pesanan ' + data.kode +
+                            ' ditahan. Bisa diselesaikan lewat halaman Pesanan Tertahan.', 'success');
                         Object.keys(pesanan).forEach((id) => delete pesanan[id]);
                         renderPesanan();
                     })
@@ -554,14 +682,26 @@
 
             function terapkanFilter() {
                 const kataKunci = inputCari.value.trim().toLowerCase();
+                let adaYangCocok = false;
+                let adaProdukSamaSekali = false;
+
                 document.querySelectorAll('#daftarProduk > div').forEach(function(kolom) {
                     const tombol = kolom.querySelector('.produk-btn');
                     if (!tombol) return;
+                    adaProdukSamaSekali = true;
+
                     const cocokKategori = kategoriAktif === 'semua' || tombol.dataset.kategori ===
                         kategoriAktif;
                     const cocokKata = tombol.dataset.nama.toLowerCase().includes(kataKunci);
-                    kolom.style.display = (cocokKategori && cocokKata) ? '' : 'none';
+                    const cocok = cocokKategori && cocokKata;
+                    kolom.style.display = cocok ? '' : 'none';
+                    if (cocok) adaYangCocok = true;
                 });
+
+                // Pesan "tidak ditemukan" cuma muncul kalau memang ada menu tapi nggak ada yang cocok filter
+                // (bukan kalau menunya emang kosong dari awal — itu sudah ada pesannya sendiri di atas)
+                document.getElementById('pesanMenuTidakKetemu')
+                    .classList.toggle('d-none', !adaProdukSamaSekali || adaYangCocok);
             }
 
             inputCari.addEventListener('input', terapkanFilter);
@@ -588,8 +728,14 @@
                 const items = Object.entries(pesanan);
 
                 if (items.length === 0) {
-                    tbody.innerHTML =
-                        '<tr id="pesananKosong"><td colspan="4" class="text-center text-muted">Belum ada menu dipesan</td></tr>';
+                    tbody.innerHTML = `
+                        <tr id="pesananKosong">
+                            <td colspan="4" class="text-center text-muted py-4">
+                                <i class="mdi mdi-cart-outline" style="font-size: 2rem; opacity: .4;"></i>
+                                <div class="mt-1">Keranjang masih kosong</div>
+                                <div class="small">Klik menu di sebelah kiri buat mulai</div>
+                            </td>
+                        </tr>`;
                 } else {
                     tbody.innerHTML = items.map(([id, item]) => `
                     <tr>
@@ -609,9 +755,36 @@
                     `).join('');
                 }
 
+                const totalPorsi = items.reduce((jumlah, [, item]) => jumlah + item.qty, 0);
+                document.getElementById('badgeJumlahPesanan').textContent = totalPorsi;
+
                 const total = hitungTotal();
-                document.getElementById('labelTotal').textContent = formatRupiah(total);
+                const labelTotal = document.getElementById('labelTotal');
+                labelTotal.textContent = formatRupiah(total);
+
+                if (total !== totalSebelumnya) {
+                    labelTotal.classList.remove('total-berubah');
+                    void labelTotal.offsetWidth; // trik yang sama kayak animasi "mantul" di kartu produk
+                    labelTotal.classList.add('total-berubah');
+                    totalSebelumnya = total;
+                }
+
                 hitungKembalian();
+                perbaruiBadgeProduk();
+            }
+
+            // Badge kecil angka di pojok kartu produk, biar kasir nggak perlu lirik tabel keranjang
+            function perbaruiBadgeProduk() {
+                document.querySelectorAll('[data-badge-produk]').forEach(function(badge) {
+                    const id = badge.dataset.badgeProduk;
+                    const item = pesanan[id];
+                    if (item) {
+                        badge.textContent = item.qty;
+                        badge.classList.remove('d-none');
+                    } else {
+                        badge.classList.add('d-none');
+                    }
+                });
             }
 
             function hitungKembalian() {
@@ -624,7 +797,18 @@
 
                 const kembalian = uangBayar - total;
                 const label = document.getElementById('labelKembalian');
-                label.textContent = formatRupiah(kembalian < 0 ? 0 : kembalian);
+                const labelTeks = document.getElementById('labelKembalianTeks');
+
+                if (kembalian < 0) {
+                    labelTeks.textContent = 'Kurang';
+                    label.textContent = formatRupiah(Math.abs(kembalian));
+                    label.classList.add('text-danger');
+                } else {
+                    labelTeks.textContent = 'Kembalian';
+                    label.textContent = formatRupiah(kembalian);
+                    label.classList.remove('text-danger');
+                }
+
                 document.getElementById('btnBayar').disabled = total <= 0 || uangBayar < total;
                 document.getElementById('btnTahan').disabled = total <= 0;
             }
@@ -643,6 +827,11 @@
                         qty: 1
                     };
                 }
+
+                btn.classList.remove('diklik');
+                void btn.offsetWidth; // trik biar animasinya bisa diulang walau class-nya belum sempat lepas
+                btn.classList.add('diklik');
+
                 renderPesanan();
             });
 
@@ -743,7 +932,7 @@
 
                 tombol.disabled = true;
                 const teksAsli = tombol.innerHTML;
-                tombol.innerHTML = 'Memproses...';
+                tombol.innerHTML = '<span class="spinner-border spinner-border-sm me-1"></span> Memproses...';
 
                 fetch('{{ route('kasir.bayar') }}', {
                         method: 'POST',
@@ -771,12 +960,25 @@
                         renderPesanan();
                     })
                     .catch((err) => {
-                        alert(err.message);
+                        tampilkanToast(err.message, 'error');
                     })
                     .finally(() => {
                         tombol.innerHTML = teksAsli;
                         hitungKembalian();
                     });
+            });
+
+            // Shortcut: tekan Enter buat langsung Proses Bayar, kecuali lagi ngetik di kotak cari/nama
+            // atau ada modal yang lagi kebuka (biar nggak nabrak input di modal Tahan Pesanan)
+            document.addEventListener('keydown', function(e) {
+                if (e.key !== 'Enter') return;
+
+                const sedangMengetik = ['INPUT', 'TEXTAREA'].includes(document.activeElement.tagName);
+                const adaModalTerbuka = document.querySelector('.modal.show');
+                if (sedangMengetik || adaModalTerbuka) return;
+
+                const btn = document.getElementById('btnBayar');
+                if (!btn.disabled) btn.click();
             });
 
             renderPesanan();

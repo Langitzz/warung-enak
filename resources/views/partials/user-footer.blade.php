@@ -1,5 +1,12 @@
 @php
     $namaWarung = \App\Models\Pengaturan::namaWarung();
+    $pengaturan = \App\Models\Pengaturan::ambil();
+
+    // Normalisasi nomor WhatsApp ke format wa.me, sama seperti di landing page & halaman "Sedang Tutup"
+    $nomorWa = preg_replace('/\D+/', '', $pengaturan->telepon ?? '');
+    if (str_starts_with($nomorWa, '0')) {
+        $nomorWa = '62' . substr($nomorWa, 1);
+    }
 @endphp
 
 <footer id="footer" class="footer dark-background">
@@ -12,9 +19,18 @@
                 </a>
                 <p>{{ \App\Models\Pengaturan::ambil()->alamat ?: 'Alamat warung belum diisi.' }}</p>
                 <div class="social-links d-flex mt-4">
-                    <a href="#"><i class="bi bi-whatsapp"></i></a>
-                    <a href="#"><i class="bi bi-instagram"></i></a>
-                    <a href="#"><i class="bi bi-facebook"></i></a>
+                    @if ($nomorWa)
+                        <a href="https://wa.me/{{ $nomorWa }}" target="_blank" rel="noopener"><i
+                                class="bi bi-whatsapp"></i></a>
+                    @endif
+                    @if ($pengaturan->instagram)
+                        <a href="{{ $pengaturan->instagram }}" target="_blank" rel="noopener"><i
+                                class="bi bi-instagram"></i></a>
+                    @endif
+                    @if ($pengaturan->facebook)
+                        <a href="{{ $pengaturan->facebook }}" target="_blank" rel="noopener"><i
+                                class="bi bi-facebook"></i></a>
+                    @endif
                 </div>
             </div>
 
@@ -39,8 +55,11 @@
     </div>
 
     <div class="container copyright text-center mt-4">
-        <p>&copy; {{ now()->year }} <strong class="px-1 sitename">{{ $namaWarung }}</strong> <span>Hak cipta
-                dilindungi.</span></p>
+        <p>&copy; {{ now()->year }} <strong class="px-1 sitename">{{ $namaWarung }}</strong> 
+            <span>
+                Hak cipta dilindungi.
+            </span>
+        </p>
     </div>
 
 </footer>

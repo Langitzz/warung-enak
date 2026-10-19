@@ -38,33 +38,65 @@
         <div class="col-md-3 grid-margin stretch-card">
             <div class="card card-rounded">
                 <div class="card-body">
-                    <p class="text-muted mb-1">Total Pendapatan</p>
-                    <h3 class="fw-bold mb-0">Rp {{ number_format($totalPendapatan, 0, ',', '.') }}</h3>
+                    <div class="d-flex align-items-center justify-content-between">
+                        <div>
+                            <p class="text-muted mb-1">Total Pendapatan</p>
+                            <h3 class="fw-bold mb-0">Rp {{ number_format($totalPendapatan, 0, ',', '.') }}</h3>
+                        </div>
+                        <div class="rounded-circle bg-success text-white d-flex align-items-center justify-content-center"
+                            style="width: 48px; height: 48px;">
+                            <i class="mdi mdi-cash-multiple" style="font-size: 24px;"></i>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
         <div class="col-md-3 grid-margin stretch-card">
             <div class="card card-rounded">
                 <div class="card-body">
-                    <p class="text-muted mb-1">Total Transaksi</p>
-                    <h3 class="fw-bold mb-0">{{ $totalTransaksi }}</h3>
+                    <div class="d-flex align-items-center justify-content-between">
+                        <div>
+                            <p class="text-muted mb-1">Total Transaksi</p>
+                            <h3 class="fw-bold mb-0">{{ $totalTransaksi }}</h3>
+                        </div>
+                        <div class="rounded-circle bg-primary text-white d-flex align-items-center justify-content-center"
+                            style="width: 48px; height: 48px;">
+                            <i class="mdi mdi-receipt-text-outline" style="font-size: 24px;"></i>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
         <div class="col-md-3 grid-margin stretch-card">
             <div class="card card-rounded">
                 <div class="card-body">
-                    <p class="text-muted mb-1">Pesanan Selesai</p>
-                    <h3 class="fw-bold mb-0">{{ $totalSelesai }}</h3>
+                    <div class="d-flex align-items-center justify-content-between">
+                        <div>
+                            <p class="text-muted mb-1">Pesanan Selesai</p>
+                            <h3 class="fw-bold mb-0">{{ $totalSelesai }}</h3>
+                        </div>
+                        <div class="rounded-circle bg-warning text-white d-flex align-items-center justify-content-center"
+                            style="width: 48px; height: 48px;">
+                            <i class="mdi mdi-check-circle-outline" style="font-size: 24px;"></i>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
         <div class="col-md-3 grid-margin stretch-card">
             <div class="card card-rounded">
                 <div class="card-body">
-                    <p class="text-muted mb-1">Jumlah Menu</p>
-                    <h3 class="fw-bold mb-0">{{ $jumlahMenu }}</h3>
-                    <p class="small text-muted mb-0">{{ $menuTersedia }} tersedia</p>
+                    <div class="d-flex align-items-center justify-content-between">
+                        <div>
+                            <p class="text-muted mb-1">Jumlah Menu</p>
+                            <h3 class="fw-bold mb-0">{{ $jumlahMenu }}</h3>
+                            <p class="small text-muted mb-0">{{ $menuTersedia }} tersedia</p>
+                        </div>
+                        <div class="rounded-circle bg-info text-white d-flex align-items-center justify-content-center"
+                            style="width: 48px; height: 48px;">
+                            <i class="mdi mdi-food" style="font-size: 24px;"></i>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>

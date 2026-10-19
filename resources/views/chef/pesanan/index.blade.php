@@ -19,7 +19,12 @@
             <p class="text-muted mb-4">Antrean dapur, yang paling lama masuk duluan.</p>
 
             @forelse ($pesanans as $pesanan)
-                <div class="border rounded-3 p-3 mb-3">
+                @php
+                    // Highlight kalau udah nunggu 15 menit atau lebih, biar nggak kelewat di antrean
+                    $pesananLama = $pesanan->created_at->diffInMinutes(now()) >= 15;
+                @endphp
+                <div
+                    class="border rounded-3 p-3 mb-3 {{ $pesananLama ? 'border-warning border-2 bg-warning bg-opacity-10' : '' }}">
                     <div class="d-flex justify-content-between align-items-start">
                         <div>
                             <span class="fw-bold">{{ $pesanan->kode }}</span>
@@ -27,6 +32,9 @@
                             <div class="small text-muted">
                                 {{ $pesanan->nama_pelanggan }} &bull;
                                 {{ $pesanan->created_at->locale('id')->translatedFormat('H:i') }}
+                                <span class="{{ $pesananLama ? 'text-warning fw-semibold' : '' }}">
+                                    ({{ $pesanan->created_at->locale('id')->diffForHumans() }})
+                                </span>
                             </div>
                         </div>
                         <div class="d-flex gap-1">

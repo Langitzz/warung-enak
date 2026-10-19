@@ -13,32 +13,64 @@
         <div class="col-sm-6 col-xl-3 grid-margin stretch-card">
             <div class="card card-rounded">
                 <div class="card-body">
-                    <p class="text-muted mb-1">Pesanan Baru</p>
-                    <h3 class="fw-bold mb-0">{{ $jumlah['menunggu'] }}</h3>
+                    <div class="d-flex align-items-center justify-content-between">
+                        <div>
+                            <p class="text-muted mb-1">Pesanan Baru</p>
+                            <h3 class="fw-bold mb-0">{{ $jumlah['menunggu'] }}</h3>
+                        </div>
+                        <div class="rounded-circle bg-warning text-white d-flex align-items-center justify-content-center"
+                            style="width: 48px; height: 48px;">
+                            <i class="mdi mdi-clock-alert-outline" style="font-size: 24px;"></i>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
         <div class="col-sm-6 col-xl-3 grid-margin stretch-card">
             <div class="card card-rounded">
                 <div class="card-body">
-                    <p class="text-muted mb-1">Sedang Diproses</p>
-                    <h3 class="fw-bold mb-0">{{ $jumlah['diproses'] }}</h3>
+                    <div class="d-flex align-items-center justify-content-between">
+                        <div>
+                            <p class="text-muted mb-1">Sedang Diproses</p>
+                            <h3 class="fw-bold mb-0">{{ $jumlah['diproses'] }}</h3>
+                        </div>
+                        <div class="rounded-circle bg-info text-white d-flex align-items-center justify-content-center"
+                            style="width: 48px; height: 48px;">
+                            <i class="mdi mdi-chef-hat" style="font-size: 24px;"></i>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
         <div class="col-sm-6 col-xl-3 grid-margin stretch-card">
             <div class="card card-rounded">
                 <div class="card-body">
-                    <p class="text-muted mb-1">Siap Disajikan</p>
-                    <h3 class="fw-bold mb-0">{{ $jumlah['siap'] }}</h3>
+                    <div class="d-flex align-items-center justify-content-between">
+                        <div>
+                            <p class="text-muted mb-1">Siap Disajikan</p>
+                            <h3 class="fw-bold mb-0">{{ $jumlah['siap'] }}</h3>
+                        </div>
+                        <div class="rounded-circle bg-primary text-white d-flex align-items-center justify-content-center"
+                            style="width: 48px; height: 48px;">
+                            <i class="mdi mdi-bell-check-outline" style="font-size: 24px;"></i>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
         <div class="col-sm-6 col-xl-3 grid-margin stretch-card">
             <div class="card card-rounded">
                 <div class="card-body">
-                    <p class="text-muted mb-1">Pesanan Selesai</p>
-                    <h3 class="fw-bold mb-0">{{ $jumlah['selesai'] }}</h3>
+                    <div class="d-flex align-items-center justify-content-between">
+                        <div>
+                            <p class="text-muted mb-1">Pesanan Selesai</p>
+                            <h3 class="fw-bold mb-0">{{ $jumlah['selesai'] }}</h3>
+                        </div>
+                        <div class="rounded-circle bg-success text-white d-flex align-items-center justify-content-center"
+                            style="width: 48px; height: 48px;">
+                            <i class="mdi mdi-check-circle-outline" style="font-size: 24px;"></i>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>

@@ -81,7 +81,7 @@
                         <a href="{{ route('menu.index') }}" class="btn-get-started">
                             <i class="bi bi-basket"></i> Pesan Sekarang
                         </a>
-                        <a href="{{ route('menu.index') }}" class="btn btn-outline-light rounded-pill px-4">Lihat Menu</a>
+                        <a href="#menu" class="btn btn-outline-light rounded-pill px-4">Lihat Menu</a>
                     </div>
                 </div>
                 <div class="col-lg-5 order-1 order-lg-2 hero-img" data-aos="zoom-out">
@@ -146,7 +146,8 @@
                                         <li>{{ Str::limit($menu->deskripsi, 60) }}</li>
                                     @endif
                                 </ul>
-                                <form action="{{ route('keranjang.tambah', $menu) }}" method="POST">
+                                <form action="{{ route('keranjang.tambah', $menu) }}" method="POST"
+                                    class="form-tambah-keranjang">
                                     @csrf
                                     <button type="submit" class="buy-btn border-0">Pesan</button>
                                 </form>
@@ -242,31 +243,31 @@
             <div class="row gy-4 justify-content-center">
                 <div class="col-lg-3 col-md-6">
                     <div class="stats-item text-center w-100 h-100">
-                        <span data-purecounter-start="0" data-purecounter-end="{{ $statMenu }}" data-purecounter-duration="1"
-                            class="purecounter"></span>
+                        <span data-purecounter-start="0" data-purecounter-end="{{ $statMenu }}"
+                            data-purecounter-duration="1" class="purecounter"></span>
                         <p>Menu Tersedia</p>
                     </div>
                 </div>
                 <div class="col-lg-3 col-md-6">
                     <div class="stats-item text-center w-100 h-100">
-                        <span data-purecounter-start="0" data-purecounter-end="{{ $statPelanggan }}" data-purecounter-duration="1"
-                            class="purecounter"></span>
+                        <span data-purecounter-start="0" data-purecounter-end="{{ $statPelanggan }}"
+                            data-purecounter-duration="1" class="purecounter"></span>
                         <p>Pelanggan Terdaftar</p>
                     </div>
                 </div>
                 @if ($statTahunBeroperasi >= 1)
                     <div class="col-lg-3 col-md-6">
                         <div class="stats-item text-center w-100 h-100">
-                            <span data-purecounter-start="0" data-purecounter-end="{{ $statTahunBeroperasi }}" data-purecounter-duration="1"
-                                class="purecounter"></span>
+                            <span data-purecounter-start="0" data-purecounter-end="{{ $statTahunBeroperasi }}"
+                                data-purecounter-duration="1" class="purecounter"></span>
                             <p>Tahun Beroperasi</p>
                         </div>
                     </div>
                 @endif
                 <div class="col-lg-3 col-md-6">
                     <div class="stats-item text-center w-100 h-100">
-                        <span data-purecounter-start="0" data-purecounter-end="{{ $statPesananSelesai }}" data-purecounter-duration="1"
-                            class="purecounter"></span>
+                        <span data-purecounter-start="0" data-purecounter-end="{{ $statPesananSelesai }}"
+                            data-purecounter-duration="1" class="purecounter"></span>
                         <p>Pesanan Selesai</p>
                     </div>
                 </div>
@@ -347,6 +348,8 @@
             </div>
         </div>
     </section>
+
+    @include('partials.toast-keranjang')
 
     {{-- ================= CTA ================= --}}
     <section id="cta" class="call-to-action section dark-background">

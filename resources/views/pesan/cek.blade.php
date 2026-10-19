@@ -28,7 +28,7 @@
 
                     <div class="card border-0 shadow-sm">
                         <div class="card-body">
-                            <form action="{{ route('pesanan.cek.proses') }}" method="POST">
+                            <form action="{{ route('pesanan.cek.proses') }}" method="POST" id="formCekPesanan">
                                 @csrf
                                 <div class="mb-3">
                                     <label class="form-label">Kode Pesanan</label>
@@ -41,7 +41,8 @@
                                         value="{{ old('no_whatsapp') }}" placeholder="Nomor yang dipakai saat checkout"
                                         required autocomplete="tel">
                                 </div>
-                                <button type="submit" class="btn-get-started border-0 w-100">Cek Pesanan</button>
+                                <button type="submit" class="btn-get-started border-0 w-100" id="tombolCekPesanan">Cek
+                                    Pesanan</button>
                             </form>
                         </div>
                     </div>
@@ -50,4 +51,25 @@
         </div>
     </section>
 
+    @push('scripts')
+        <script>
+            (function() {
+                const form = document.getElementById('formCekPesanan');
+                const tombol = document.getElementById('tombolCekPesanan');
+                const teksAsli = tombol.innerHTML;
+
+                form.addEventListener('submit', function() {
+                    tombol.disabled = true;
+                    tombol.innerHTML = '<span class="spinner-border spinner-border-sm me-2"></span>Memproses...';
+                });
+
+                window.addEventListener('pageshow', function(e) {
+                    if (e.persisted) {
+                        tombol.disabled = false;
+                        tombol.innerHTML = teksAsli;
+                    }
+                });
+            })();
+        </script>
+    @endpush
 @endsection
